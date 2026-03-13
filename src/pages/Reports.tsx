@@ -19,6 +19,9 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval }
 import { ptBR } from 'date-fns/locale';
 import { Calendar, Filter, Download } from 'lucide-react';
 
+import { PageCard } from '../components/PageCard';
+import { StatCard } from '../components/StatCard';
+
 export const Reports = () => {
   const { workLogs, expenses, fuelLogs, maintenanceLogs, vehicleSettings } = useAppStore();
   const [month, setMonth] = useState(new Date());
@@ -87,55 +90,59 @@ export const Reports = () => {
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 pb-24">
+    <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Relatórios</h1>
-          <p className="text-zinc-400">Análise detalhada do seu desempenho em {format(month, 'MMMM', { locale: ptBR })}.</p>
+          <h2 className="text-2xl font-bold text-zinc-100">Relatórios Mensais</h2>
+          <p className="text-zinc-400 text-sm">Análise detalhada do seu desempenho em {format(month, 'MMMM', { locale: ptBR })}.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1))}
-            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100"
+            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-colors"
           >
             Anterior
           </button>
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2 flex items-center gap-2 text-sm">
             <Calendar size={16} className="text-zinc-500" />
-            <span className="font-bold uppercase">{format(month, 'MMMM yyyy', { locale: ptBR })}</span>
+            <span className="font-bold uppercase text-zinc-100">{format(month, 'MMMM yyyy', { locale: ptBR })}</span>
           </div>
           <button 
             onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1))}
-            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100"
+            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-colors"
           >
             Próximo
           </button>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Ganhos Brutos</p>
-          <p className="text-3xl font-bold text-emerald-500">R$ {data.totalGross.toFixed(2)}</p>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Km Rodados</p>
-          <p className="text-3xl font-bold text-blue-500">{data.totalKm.toFixed(1)} <span className="text-sm font-normal text-zinc-500">KM</span></p>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Custo por KM</p>
-          <p className="text-3xl font-bold text-amber-500">R$ {data.costPerKm.toFixed(2)}</p>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider">Lucro Líquido</p>
-          <p className="text-3xl font-bold text-zinc-100">R$ {(data.totalGross - data.totalExp - data.allocatedFixedCosts).toFixed(2)}</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard 
+          label="Ganhos Brutos" 
+          value={`R$ ${data.totalGross.toFixed(2)}`} 
+          color="emerald"
+        />
+        <StatCard 
+          label="Km Rodados" 
+          value={`${data.totalKm.toFixed(1)} KM`} 
+          color="blue"
+        />
+        <StatCard 
+          label="Custo por KM" 
+          value={`R$ ${data.costPerKm.toFixed(2)}`} 
+          color="amber"
+        />
+        <StatCard 
+          label="Lucro Líquido" 
+          value={`R$ ${(data.totalGross - data.totalExp - data.allocatedFixedCosts).toFixed(2)}`} 
+          color="zinc"
+        />
       </div>
 
       {/* Platform Comparison Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {data.platformData.map((p, idx) => (
-          <div key={p.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-4">
+          <PageCard key={p.id} className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-bold text-zinc-100">{p.name}</h4>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
@@ -143,21 +150,21 @@ export const Reports = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Ganhos</p>
-                <p className="text-lg font-bold text-emerald-500">R$ {p.value.toFixed(2)}</p>
+                <p className="text-lg font-bold text-emerald-400">R$ {p.value.toFixed(2)}</p>
               </div>
               <div>
                 <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Média/Entrega</p>
                 <p className="text-lg font-bold text-zinc-100">R$ {p.avgPerDelivery.toFixed(2)}</p>
               </div>
             </div>
-          </div>
+          </PageCard>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Earnings Chart */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-6">
-          <h3 className="font-bold text-lg">Ganhos Diários</h3>
+        <PageCard className="space-y-6">
+          <h3 className="font-bold text-lg text-zinc-100">Ganhos Diários</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.dailyData}>
@@ -172,11 +179,11 @@ export const Reports = () => {
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </PageCard>
 
         {/* Expenses by Category */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-6">
-          <h3 className="font-bold text-lg">Distribuição de Gastos</h3>
+        <PageCard className="space-y-6">
+          <h3 className="font-bold text-lg text-zinc-100">Distribuição de Gastos</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -207,11 +214,11 @@ export const Reports = () => {
               </div>
             ))}
           </div>
-        </div>
+        </PageCard>
 
         {/* Profit by Platform */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-6">
-          <h3 className="font-bold text-lg">Ganhos por Plataforma</h3>
+        <PageCard className="space-y-6">
+          <h3 className="font-bold text-lg text-zinc-100">Ganhos por Plataforma</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.platformData} layout="vertical">
@@ -225,11 +232,11 @@ export const Reports = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </PageCard>
 
         {/* KM Trend */}
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-6">
-          <h3 className="font-bold text-lg">Km Rodados por Dia</h3>
+        <PageCard className="space-y-6">
+          <h3 className="font-bold text-lg text-zinc-100">Km Rodados por Dia</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.dailyData}>
@@ -244,7 +251,7 @@ export const Reports = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </PageCard>
       </div>
     </div>
   );

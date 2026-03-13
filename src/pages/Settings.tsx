@@ -17,6 +17,8 @@ import {
   Instagram
 } from 'lucide-react';
 
+import { PageCard } from '../components/PageCard';
+
 export const Settings = () => {
   const { user, signOut } = useAuthStore();
   const { workProfiles, vehicleSettings, goals, updateWorkProfiles, updateVehicleSettings, updateGoal } = useAppStore();
@@ -64,25 +66,25 @@ export const Settings = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8 pb-24">
+    <div className="space-y-8">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight">Ajustes</h1>
-        <p className="text-zinc-400">Gerencie seu perfil e configurações do app.</p>
+        <h2 className="text-2xl font-bold text-zinc-100">Ajustes</h2>
+        <p className="text-zinc-400 text-sm">Gerencie seu perfil e configurações do app.</p>
       </header>
 
       {/* Profile Section */}
-      <section className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
+      <PageCard className="p-0 overflow-hidden">
         <div className="p-6 flex items-center gap-4 border-b border-zinc-800">
           <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-zinc-950 font-bold text-2xl">
             {user?.email?.[0].toUpperCase()}
           </div>
           <div>
-            <h3 className="font-bold text-lg">{user?.displayName || 'Usuário'}</h3>
+            <h3 className="font-bold text-lg text-zinc-100">{user?.displayName || 'Usuário'}</h3>
             <p className="text-zinc-500 text-sm">{user?.email}</p>
           </div>
         </div>
         <div className="p-2">
-          <button className="w-full flex items-center justify-between p-4 hover:bg-zinc-800 rounded-2xl transition-colors text-red-500" onClick={signOut}>
+          <button className="w-full flex items-center justify-between p-4 hover:bg-zinc-800/50 rounded-2xl transition-colors text-red-500" onClick={signOut}>
             <div className="flex items-center gap-3">
               <LogOut size={20} />
               <span className="font-medium">Sair da Conta</span>
@@ -90,7 +92,7 @@ export const Settings = () => {
             <ChevronRight size={18} />
           </button>
         </div>
-      </section>
+      </PageCard>
 
       {/* Platforms Section */}
       <section className="space-y-4">
@@ -102,7 +104,7 @@ export const Settings = () => {
               onClick={() => togglePlatform(p)}
               className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
                 activePlatforms.includes(p) 
-                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' 
+                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' 
                   : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
               }`}
             >
@@ -116,10 +118,10 @@ export const Settings = () => {
       {/* Goal Section */}
       <section className="space-y-4">
         <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest px-2">Meta Diária</h3>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
+        <PageCard className="p-6 space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-zinc-400">Meta atual</span>
-            <span className="text-2xl font-bold text-emerald-500">R$ {activeGoal?.target_amount || 0}</span>
+            <span className="text-2xl font-bold text-emerald-400">R$ {activeGoal?.target_amount || 0}</span>
           </div>
           <input 
             type="range" 
@@ -130,13 +132,13 @@ export const Settings = () => {
             onChange={(e) => handleGoalChange(Number(e.target.value))}
             className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
-        </div>
+        </PageCard>
       </section>
 
       {/* Vehicle Section */}
       <section className="space-y-4">
         <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest px-2">Perfil de Custos</h3>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-6">
+        <PageCard className="p-6 space-y-6">
           <div className="space-y-2">
             <label className="text-xs font-bold text-zinc-500 uppercase">Meio de Transporte</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -194,17 +196,17 @@ export const Settings = () => {
               />
             </div>
           </div>
-        </div>
+        </PageCard>
       </section>
 
       {/* App Info Section */}
-      <section className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-6">
+      <PageCard className="p-6 space-y-6">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl">
             <Info size={24} />
           </div>
           <div className="space-y-1">
-            <h3 className="font-bold">Sobre o App</h3>
+            <h3 className="font-bold text-zinc-100">Sobre o App</h3>
             <p className="text-sm text-zinc-400 leading-relaxed">
               O RotaLucro é uma ferramenta focada em ajudar entregadores a terem clareza sobre seus ganhos reais.
             </p>
@@ -227,14 +229,14 @@ export const Settings = () => {
               href="https://instagram.com/onoturnocsz" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-emerald-500 font-bold hover:underline"
+              className="flex items-center gap-2 text-emerald-400 font-bold hover:underline"
             >
               <Instagram size={16} />
               @onoturnocsz
             </a>
           </div>
         </div>
-      </section>
+      </PageCard>
     </div>
   );
 };

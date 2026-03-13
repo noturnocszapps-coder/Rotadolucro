@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+import { PageCard } from '../components/PageCard';
+import { StatCard } from '../components/StatCard';
+
 export const Goals = () => {
   const { goals, workLogs, updateGoal } = useAppStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -38,21 +41,21 @@ export const Goals = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Metas</h1>
-          <p className="text-zinc-400">Acompanhe seus objetivos financeiros.</p>
+          <h2 className="text-2xl font-bold text-zinc-100">Metas Financeiras</h2>
+          <p className="text-zinc-400 text-sm">Acompanhe seus objetivos para este mês.</p>
         </div>
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2 flex items-center gap-2 text-sm">
           <Calendar size={16} className="text-zinc-500" />
-          <span className="font-bold uppercase">{format(currentMonth, 'MMMM yyyy', { locale: ptBR })}</span>
+          <span className="font-bold uppercase text-zinc-100">{format(currentMonth, 'MMMM yyyy', { locale: ptBR })}</span>
         </div>
       </header>
 
       {/* Main Goal Card */}
-      <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2.5rem] relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
+      <PageCard className="p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
           <Target size={120} />
         </div>
 
@@ -66,11 +69,11 @@ export const Goals = () => {
                     type="number"
                     value={newGoalAmount}
                     onChange={(e) => setNewGoalAmount(e.target.value)}
-                    className="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2 text-2xl font-bold w-40 focus:outline-none focus:border-emerald-500"
+                    className="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2 text-2xl font-bold w-40 focus:outline-none focus:border-emerald-500 text-zinc-100"
                     placeholder="0.00"
                   />
-                  <button onClick={handleSaveGoal} className="bg-emerald-500 text-zinc-950 p-2 rounded-xl font-bold">Salvar</button>
-                  <button onClick={() => setIsEditing(false)} className="text-zinc-500 font-bold px-2">Cancelar</button>
+                  <button onClick={handleSaveGoal} className="bg-emerald-500 text-zinc-950 px-4 py-2 rounded-xl font-bold hover:bg-emerald-600 transition-colors">Salvar</button>
+                  <button onClick={() => setIsEditing(false)} className="text-zinc-500 font-bold px-2 hover:text-zinc-400 transition-colors">Cancelar</button>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2">
@@ -78,13 +81,13 @@ export const Goals = () => {
                   <button onClick={() => {
                     setNewGoalAmount(activeGoal.target_amount.toString());
                     setIsEditing(true);
-                  }} className="text-xs text-emerald-500 font-bold hover:underline">Alterar</button>
+                  }} className="text-xs text-emerald-400 font-bold hover:underline">Alterar</button>
                 </div>
               )}
             </div>
             <div className="text-right">
               <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Progresso</p>
-              <p className="text-4xl font-bold text-emerald-500">{Math.min(100, progress).toFixed(1)}%</p>
+              <p className="text-4xl font-bold text-emerald-400">{Math.min(100, progress).toFixed(1)}%</p>
             </div>
           </div>
 
@@ -101,60 +104,56 @@ export const Goals = () => {
             </div>
           </div>
         </div>
-      </div>
+      </PageCard>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center">
-            <TrendingUp size={24} />
-          </div>
-          <div>
-            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Média Diária Necessária</p>
-            <p className="text-xl font-bold">R$ {((activeGoal.target_amount - totalEarnings) / Math.max(1, (end.getDate() - currentMonth.getDate()))).toFixed(2)}</p>
-          </div>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl flex items-center gap-4">
-          <div className="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center">
-            <CheckCircle2 size={24} />
-          </div>
-          <div>
-            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">Dias Restantes</p>
-            <p className="text-xl font-bold">{end.getDate() - currentMonth.getDate()} dias</p>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StatCard 
+          label="Média Diária Necessária" 
+          value={`R$ ${((activeGoal.target_amount - totalEarnings) / Math.max(1, (end.getDate() - currentMonth.getDate()))).toFixed(2)}`} 
+          color="blue"
+          icon={<TrendingUp size={18} />}
+        />
+        <StatCard 
+          label="Dias Restantes" 
+          value={`${end.getDate() - currentMonth.getDate()} dias`} 
+          color="emerald"
+          icon={<CheckCircle2 size={18} />}
+        />
       </div>
 
       {/* History Section */}
       <div className="space-y-4">
         <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest px-2">Histórico de Metas</h3>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl divide-y divide-zinc-800 overflow-hidden">
-          {goals.length === 0 ? (
-            <div className="p-8 text-center text-zinc-500">Nenhuma meta anterior registrada.</div>
-          ) : (
-            goals.map((goal, index) => (
-              <div key={index} className="p-4 flex items-center justify-between hover:bg-zinc-800/50 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-400">
-                    <Target size={20} />
+        <PageCard className="p-0 overflow-hidden">
+          <div className="divide-y divide-zinc-800">
+            {goals.length === 0 ? (
+              <div className="p-8 text-center text-zinc-500">Nenhuma meta anterior registrada.</div>
+            ) : (
+              goals.map((goal, index) => (
+                <div key={index} className="p-4 flex items-center justify-between hover:bg-zinc-800/30 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-400">
+                      <Target size={20} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-zinc-100">{goal.month}</p>
+                      <p className="text-xs text-zinc-500">Meta: R$ {goal.target_amount.toFixed(2)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold">{goal.month}</p>
-                    <p className="text-xs text-zinc-500">Meta: R$ {goal.target_amount.toFixed(2)}</p>
+                  <div className="text-right">
+                    <p className={`font-bold ${goal.current_amount >= goal.target_amount ? 'text-emerald-400' : 'text-zinc-400'}`}>
+                      R$ {goal.current_amount.toFixed(2)}
+                    </p>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase">
+                      {((goal.current_amount / goal.target_amount) * 100).toFixed(1)}%
+                    </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className={`font-bold ${goal.current_amount >= goal.target_amount ? 'text-emerald-500' : 'text-zinc-400'}`}>
-                    R$ {goal.current_amount.toFixed(2)}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase">
-                    {((goal.current_amount / goal.target_amount) * 100).toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
+        </PageCard>
       </div>
     </div>
   );

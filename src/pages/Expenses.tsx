@@ -13,6 +13,9 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { PageCard } from '../components/PageCard';
+import { StatCard } from '../components/StatCard';
+
 export const Expenses = () => {
   const { expenses, workProfiles } = useAppStore();
   const [platformFilter, setPlatformFilter] = useState<PlatformType | 'all'>('all');
@@ -46,11 +49,11 @@ export const Expenses = () => {
   }, [filteredExpenses]);
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 pb-24">
+    <div className="space-y-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gastos</h1>
-          <p className="text-zinc-400">Controle suas despesas operacionais.</p>
+          <h2 className="text-2xl font-bold text-zinc-100">Controle de Gastos</h2>
+          <p className="text-zinc-400 text-sm">Gerencie suas despesas operacionais.</p>
         </div>
         <Link to="/expenses/new" className="bg-emerald-500 text-zinc-950 p-3 rounded-2xl font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
           <Plus size={24} />
@@ -59,18 +62,19 @@ export const Expenses = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Total no Período</p>
-          <p className="text-3xl font-bold text-red-500">R$ {stats.total.toFixed(2)}</p>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-1">
-          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Maior Categoria</p>
-          <p className="text-xl font-bold text-zinc-100">
-            {Object.entries(stats.byCategory).sort((a: any, b: any) => b[1] - a[1])[0] 
-              ? categoryLabels[Object.entries(stats.byCategory).sort((a: any, b: any) => b[1] - a[1])[0][0]]
-              : 'Nenhum'}
-          </p>
-        </div>
+        <StatCard 
+          label="Total no Período" 
+          value={`R$ ${stats.total.toFixed(2)}`} 
+          color="red"
+          icon={<Receipt size={18} />}
+        />
+        <StatCard 
+          label="Maior Categoria" 
+          value={Object.entries(stats.byCategory).sort((a: any, b: any) => b[1] - a[1])[0] 
+            ? categoryLabels[Object.entries(stats.byCategory).sort((a: any, b: any) => b[1] - a[1])[0][0]]
+            : 'Nenhum'} 
+          color="zinc"
+        />
       </div>
 
       {/* Filters */}
@@ -79,8 +83,10 @@ export const Expenses = () => {
           <button 
             onClick={() => setPlatformFilter('all')}
             className={cn(
-              "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
-              platformFilter === 'all' ? "bg-emerald-500 text-zinc-950" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+              "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border",
+              platformFilter === 'all' 
+                ? "bg-emerald-500 text-zinc-950 border-emerald-500" 
+                : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
             )}
           >
             Todos
@@ -90,8 +96,10 @@ export const Expenses = () => {
               key={p.id}
               onClick={() => setPlatformFilter(p.platform_type)}
               className={cn(
-                "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap",
-                platformFilter === p.platform_type ? "bg-emerald-500 text-zinc-950" : "bg-zinc-900 text-zinc-400 border border-zinc-800"
+                "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border",
+                platformFilter === p.platform_type 
+                  ? "bg-emerald-500 text-zinc-950 border-emerald-500" 
+                  : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
               )}
             >
               {PLATFORM_NAMES[p.platform_type]}
@@ -111,22 +119,22 @@ export const Expenses = () => {
 
       <div className="space-y-4">
         {filteredExpenses.length === 0 ? (
-          <div className="bg-zinc-900 border border-zinc-800 p-12 rounded-3xl text-center space-y-4">
+          <PageCard className="text-center py-12 space-y-4">
             <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto text-zinc-500">
               <Receipt size={32} />
             </div>
             <p className="text-zinc-400">Nenhum gasto encontrado para este filtro.</p>
-          </div>
+          </PageCard>
         ) : (
           filteredExpenses.map((exp) => (
-            <div key={exp.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl flex items-center justify-between gap-4 hover:border-zinc-700 transition-all group">
+            <PageCard key={exp.id} className="flex items-center justify-between gap-4 hover:border-zinc-700 transition-all group">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex flex-col items-center justify-center text-red-500">
                   <span className="text-[10px] font-bold uppercase">{format(new Date(exp.date), 'MMM', { locale: ptBR })}</span>
                   <span className="text-lg font-bold leading-none">{format(new Date(exp.date), 'dd')}</span>
                 </div>
                 <div>
-                  <h3 className="font-bold">{exp.description}</h3>
+                  <h3 className="font-bold text-zinc-100">{exp.description}</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{categoryLabels[exp.category]}</p>
                     {exp.platform_type && (
@@ -139,11 +147,11 @@ export const Expenses = () => {
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="text-red-500 font-bold">- R$ {exp.amount.toFixed(2)}</p>
+                  <p className="text-red-400 font-bold">- R$ {exp.amount.toFixed(2)}</p>
                 </div>
                 <ChevronRight size={20} className="text-zinc-700 group-hover:text-zinc-400 transition-colors" />
               </div>
-            </div>
+            </PageCard>
           ))
         )}
       </div>
