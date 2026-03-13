@@ -13,7 +13,8 @@ import {
   Fuel,
   Wallet,
   Calendar,
-  BarChart3
+  BarChart3,
+  Calculator
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { 
@@ -159,12 +160,18 @@ export const Dashboard = () => {
       </header>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Link to="/work-logs/new" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-emerald-500/50 transition-all group">
           <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
             <Plus size={20} />
           </div>
           <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Novo Registro</span>
+        </Link>
+        <Link to="/simulator" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-emerald-500/50 transition-all group">
+          <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+            <Calculator size={20} />
+          </div>
+          <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Simular Rota</span>
         </Link>
         <Link to="/expenses/new" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-red-500/50 transition-all group">
           <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">

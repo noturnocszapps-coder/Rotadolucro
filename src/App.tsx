@@ -18,6 +18,7 @@ import { MaintenanceLogs } from './pages/MaintenanceLogs';
 import { MaintenanceForm } from './pages/MaintenanceForm';
 import { Reports } from './pages/Reports';
 import { Goals } from './pages/Goals';
+import { RouteSimulator } from './pages/RouteSimulator';
 import { Settings } from './pages/Settings';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/maintenance/new" element={<MaintenanceForm />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/goals" element={<Goals />} />
+          <Route path="/simulator" element={<RouteSimulator />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

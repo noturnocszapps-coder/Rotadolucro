@@ -9,6 +9,7 @@ import {
   BarChart3, 
   Settings,
   Target,
+  Calculator,
   Instagram
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
@@ -21,6 +22,7 @@ function cn(...inputs: ClassValue[]) {
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/work-logs', icon: ClipboardList, label: 'Registros' },
+  { path: '/simulator', icon: Calculator, label: 'Simulador' },
   { path: '/expenses', icon: Receipt, label: 'Gastos' },
   { path: '/fuel', icon: Fuel, label: 'Combustível' },
   { path: '/goals', icon: Target, label: 'Metas' },
