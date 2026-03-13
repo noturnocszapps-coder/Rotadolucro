@@ -1,0 +1,165 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "created_at"]
+    },
+    "UserWorkProfile": {
+      "title": "UserWorkProfile",
+      "description": "Platforms the user works with",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "platform_type": { "type": "string", "enum": ["ifood", "shopee", "mercadolivre"] },
+        "active": { "type": "boolean" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "platform_type", "active", "created_at"]
+    },
+    "VehicleSettings": {
+      "title": "VehicleSettings",
+      "description": "User vehicle configuration",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "platform_type": { "type": "string" },
+        "transport_mode": { "type": "string" },
+        "vehicle_model": { "type": "string" },
+        "fuel_type": { "type": "string" },
+        "average_consumption": { "type": "number" },
+        "insurance_monthly": { "type": "number" },
+        "financing_monthly": { "type": "number" },
+        "ipva_annual": { "type": "number" },
+        "maintenance_monthly": { "type": "number" },
+        "other_fixed_costs": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "transport_mode", "vehicle_model", "created_at"]
+    },
+    "WorkLog": {
+      "title": "WorkLog",
+      "description": "Daily work records",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "platform_type": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "gross_amount": { "type": "number" },
+        "bonus_amount": { "type": "number" },
+        "hours_worked": { "type": "number" },
+        "km_driven": { "type": "number" },
+        "deliveries_count": { "type": "number" },
+        "packages_count": { "type": "number" },
+        "routes_count": { "type": "number" },
+        "notes": { "type": "string" },
+        "vehicle_type": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "platform_type", "date", "gross_amount", "created_at"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "General expenses",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "platform_type": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "date", "category", "amount", "created_at"]
+    },
+    "FuelLog": {
+      "title": "FuelLog",
+      "description": "Fuel consumption records",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "liters": { "type": "number" },
+        "price_per_liter": { "type": "number" },
+        "total_value": { "type": "number" },
+        "odometer_km": { "type": "number" },
+        "vehicle_type": { "type": "string" },
+        "platform_type": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "date", "liters", "total_value", "created_at"]
+    },
+    "MaintenanceLog": {
+      "title": "MaintenanceLog",
+      "description": "Vehicle maintenance records",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "odometer_km": { "type": "number" },
+        "platform_type": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "date", "type", "amount", "created_at"]
+    },
+    "Goal": {
+      "title": "Goal",
+      "description": "Financial goals",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "platform_type": { "type": "string" },
+        "target_amount": { "type": "number" },
+        "current_amount": { "type": "number" },
+        "month": { "type": "string" },
+        "active": { "type": "boolean" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["user_id", "target_amount", "month", "active", "created_at"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "Profile",
+      "description": "User profile documents"
+    },
+    "user_work_profiles/{profileId}": {
+      "schema": "UserWorkProfile",
+      "description": "User platform profiles"
+    },
+    "vehicle_settings/{settingId}": {
+      "schema": "VehicleSettings",
+      "description": "User vehicle settings"
+    },
+    "work_logs/{logId}": {
+      "schema": "WorkLog",
+      "description": "Daily work logs"
+    },
+    "expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "General expenses"
+    },
+    "fuel_logs/{logId}": {
+      "schema": "FuelLog",
+      "description": "Fuel logs"
+    },
+    "maintenance_logs/{logId}": {
+      "schema": "MaintenanceLog",
+      "description": "Maintenance logs"
+    },
+    "goals/{goalId}": {
+      "schema": "Goal",
+      "description": "Financial goals"
+    }
+  }
+}

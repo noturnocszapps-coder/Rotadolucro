@@ -1,0 +1,7 @@
+{
+  "name": "RotaLucro",
+  "description": "Plataforma de gestão financeira para entregadores iFood, Shopee e Mercado Livre. Calcule seu lucro real, controle gastos e otimize sua rota.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
