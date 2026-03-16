@@ -168,11 +168,11 @@ export const WorkLogForm = () => {
               </div>
 
               {/* Platform Specific Fields */}
-              {platform === 'ifood' && (
+              {platform === 'frete' && (
                 <>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
-                      <DollarSign size={16} /> Ganhos Totais
+                      <DollarSign size={16} /> Ganhos Brutos
                     </label>
                     <input 
                       type="number" 
@@ -186,28 +186,14 @@ export const WorkLogForm = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
-                      <Plus size={16} /> Bônus / Gorjeta
+                      <Package size={16} /> Pacotes (Opcional)
                     </label>
                     <input 
                       type="number" 
-                      step="0.01"
-                      value={bonusAmount || ''}
-                      onChange={(e) => setBonusAmount(Number(e.target.value))}
+                      value={packagesCount || ''}
+                      onChange={(e) => setPackagesCount(Number(e.target.value))}
                       className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                      placeholder="R$ 0,00"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
-                      <Package size={16} /> Entregas Concluídas
-                    </label>
-                    <input 
-                      type="number" 
-                      required 
-                      value={deliveriesCount || ''}
-                      onChange={(e) => setDeliveriesCount(Number(e.target.value))}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                      placeholder="Ex: 15"
+                      placeholder="Ex: 10"
                     />
                   </div>
                 </>

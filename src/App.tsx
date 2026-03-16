@@ -19,6 +19,7 @@ import { MaintenanceForm } from './pages/MaintenanceForm';
 import { Reports } from './pages/Reports';
 import { Goals } from './pages/Goals';
 import { RouteSimulator } from './pages/RouteSimulator';
+import { FreightCalculator } from './pages/FreightCalculator';
 import { Settings } from './pages/Settings';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/goals" element={<Goals />} />
           <Route path="/simulator" element={<RouteSimulator />} />
+          <Route path="/freight-calculator" element={<FreightCalculator />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>

@@ -13,14 +13,15 @@ import {
   Pie,
   Cell,
   LineChart,
-  Line
+  Line,
+  AreaChart,
+  Area
 } from 'recharts';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Filter, Download } from 'lucide-react';
+import { Calendar, Filter, Download, ChevronLeft, ChevronRight, TrendingUp, Wallet, Navigation, Package } from 'lucide-react';
 
 import { PageCard } from '../components/PageCard';
-import { StatCard } from '../components/StatCard';
 
 export const Reports = () => {
   const { workLogs, expenses, fuelLogs, maintenanceLogs, vehicleSettings } = useAppStore();
@@ -54,7 +55,8 @@ export const Reports = () => {
       { name: 'Outros', value: filteredExps.reduce((acc, curr) => acc + curr.amount, 0) },
     ].filter(c => c.value > 0);
 
-    const platformData = Object.keys(PLATFORM_NAMES).map(p => {
+    const activePlatforms = ['shopee', 'mercadolivre', 'frete'];
+    const platformData = activePlatforms.map(p => {
       const pLogs = filteredLogs.filter(l => l.platform_type === p);
       const gross = pLogs.reduce((acc, curr) => acc + curr.gross_amount + (curr.bonus_amount || 0), 0);
       const km = pLogs.reduce((acc, curr) => acc + curr.km_driven, 0);
@@ -67,14 +69,13 @@ export const Reports = () => {
         deliveries,
         avgPerDelivery: deliveries > 0 ? gross / deliveries : 0
       };
-    }).filter(p => p.value > 0);
+    }).filter(p => p.value > 0 || p.deliveries > 0);
 
     const totalGross = filteredLogs.reduce((acc, curr) => acc + curr.gross_amount + (curr.bonus_amount || 0), 0);
     const totalExp = filteredExps.reduce((acc, curr) => acc + curr.amount, 0) + 
                      filteredFuels.reduce((acc, curr) => acc + curr.total_value, 0) + 
                      filteredMaints.reduce((acc, curr) => acc + curr.amount, 0);
 
-    // Fixed cost allocation
     const monthlyFixedCosts = (vehicleSettings?.insurance_monthly || 0) + 
                              (vehicleSettings?.financing_monthly || 0) + 
                              (vehicleSettings?.maintenance_monthly || 0) + 
@@ -83,173 +84,226 @@ export const Reports = () => {
     const allocatedFixedCosts = monthlyFixedCosts;
     const totalKm = filteredLogs.reduce((acc, curr) => acc + curr.km_driven, 0);
     const costPerKm = totalKm > 0 ? (totalExp + allocatedFixedCosts) / totalKm : 0;
+    const totalDeliveries = filteredLogs.reduce((acc, curr) => acc + curr.deliveries_count, 0);
 
-    return { dailyData, categoryData, platformData, totalGross, totalExp, allocatedFixedCosts, totalKm, costPerKm };
+    return { dailyData, categoryData, platformData, totalGross, totalExp, allocatedFixedCosts, totalKm, costPerKm, totalDeliveries };
   }, [month, workLogs, expenses, fuelLogs, maintenanceLogs, vehicleSettings]);
 
   const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 pb-24">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-100">Relatórios Mensais</h2>
-          <p className="text-zinc-400 text-sm">Análise detalhada do seu desempenho em {format(month, 'MMMM', { locale: ptBR })}.</p>
+          <h2 className="text-3xl font-black text-zinc-100 tracking-tight">Relatórios</h2>
+          <p className="text-zinc-500 text-sm font-medium">Análise de performance em {format(month, 'MMMM', { locale: ptBR })}.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1))}
-            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-colors"
-          >
-            Anterior
-          </button>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2 flex items-center gap-2 text-sm">
-            <Calendar size={16} className="text-zinc-500" />
-            <span className="font-bold uppercase text-zinc-100">{format(month, 'MMMM yyyy', { locale: ptBR })}</span>
+        
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-zinc-900/50 border border-zinc-800 rounded-2xl p-1">
+            <button 
+              onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1))}
+              className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-all"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="px-4 flex items-center gap-2 min-w-[140px] justify-center">
+              <Calendar size={16} className="text-emerald-500" />
+              <span className="text-xs font-black uppercase tracking-widest text-zinc-200">
+                {format(month, 'MMM yyyy', { locale: ptBR })}
+              </span>
+            </div>
+            <button 
+              onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1))}
+              className="p-2 hover:bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-all"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
-          <button 
-            onClick={() => setMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1))}
-            className="p-2 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 transition-colors"
-          >
-            Próximo
+          
+          <button className="p-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400 hover:text-zinc-100 transition-all">
+            <Download size={20} />
           </button>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          label="Ganhos Brutos" 
-          value={`R$ ${data.totalGross.toFixed(2)}`} 
-          color="emerald"
-        />
-        <StatCard 
-          label="Km Rodados" 
-          value={`${data.totalKm.toFixed(1)} KM`} 
-          color="blue"
-        />
-        <StatCard 
-          label="Custo por KM" 
-          value={`R$ ${data.costPerKm.toFixed(2)}`} 
-          color="amber"
-        />
-        <StatCard 
-          label="Lucro Líquido" 
-          value={`R$ ${(data.totalGross - data.totalExp - data.allocatedFixedCosts).toFixed(2)}`} 
-          color="zinc"
-        />
-      </div>
-
-      {/* Platform Comparison Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.platformData.map((p, idx) => (
-          <PageCard key={p.id} className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="font-bold text-zinc-100">{p.name}</h4>
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+      {/* Main Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Ganhos Brutos', value: `R$ ${data.totalGross.toFixed(2)}`, icon: Wallet, color: 'emerald' },
+          { label: 'Km Rodados', value: `${data.totalKm.toFixed(1)} KM`, icon: Navigation, color: 'blue' },
+          { label: 'Total Entregas', value: data.totalDeliveries, icon: Package, color: 'amber' },
+          { label: 'Lucro Líquido', value: `R$ ${(data.totalGross - data.totalExp - data.allocatedFixedCosts).toFixed(2)}`, icon: TrendingUp, color: 'emerald' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-zinc-900/40 border border-zinc-800/50 p-6 rounded-[2rem] space-y-3 relative overflow-hidden group hover:border-zinc-700/50 transition-all">
+            <div className={`w-12 h-12 rounded-2xl bg-${stat.color}-500/10 flex items-center justify-center text-${stat.color}-500`}>
+              <stat.icon size={24} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Ganhos</p>
-                <p className="text-lg font-bold text-emerald-400">R$ {p.value.toFixed(2)}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Média/Entrega</p>
-                <p className="text-lg font-bold text-zinc-100">R$ {p.avgPerDelivery.toFixed(2)}</p>
-              </div>
+            <div>
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{stat.label}</p>
+              <h4 className="text-2xl font-black text-zinc-100 tracking-tight">{stat.value}</h4>
             </div>
-          </PageCard>
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Daily Earnings Chart */}
-        <PageCard className="space-y-6">
-          <h3 className="font-bold text-lg text-zinc-100">Ganhos Diários</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data.dailyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `R$${v}`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px' }}
-                  itemStyle={{ color: '#10b981' }}
-                />
-                <Line type="monotone" dataKey="ganhos" stroke="#10b981" strokeWidth={3} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Daily Performance Chart */}
+        <div className="lg:col-span-2">
+          <PageCard className="p-8 rounded-[2.5rem] bg-zinc-900/40 border-zinc-800/50 space-y-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Desempenho Diário</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Ganhos</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="h-[350px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.dailyData}>
+                  <defs>
+                    <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} opacity={0.5} />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#52525b" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false}
+                    tick={{ fontWeight: 700 }}
+                  />
+                  <YAxis 
+                    stroke="#52525b" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickFormatter={(v) => `R$${v}`}
+                    tick={{ fontWeight: 700 }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '16px', padding: '12px' }}
+                    itemStyle={{ color: '#10b981', fontWeight: 800 }}
+                    labelStyle={{ color: '#71717a', marginBottom: '4px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="ganhos" 
+                    stroke="#10b981" 
+                    strokeWidth={4} 
+                    fillOpacity={1} 
+                    fill="url(#colorGanhos)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </PageCard>
+        </div>
+
+        {/* Expenses Distribution */}
+        <PageCard className="p-8 rounded-[2.5rem] bg-zinc-900/40 border-zinc-800/50 space-y-8 flex flex-col">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Distribuição de Gastos</h3>
+          
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <div className="h-[240px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data.categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={90}
+                    paddingAngle={8}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {data.categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '16px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-3 w-full mt-6">
+              {data.categoryData.map((entry, index) => (
+                <div key={entry.name} className="flex items-center justify-between p-3 bg-zinc-950/50 rounded-xl border border-zinc-800/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{entry.name}</span>
+                  </div>
+                  <span className="text-xs font-black text-zinc-100">R$ {entry.value.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </PageCard>
+      </div>
 
-        {/* Expenses by Category */}
-        <PageCard className="space-y-6">
-          <h3 className="font-bold text-lg text-zinc-100">Distribuição de Gastos</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data.categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {data.categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            {data.categoryData.map((entry, index) => (
-              <div key={entry.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                <span className="text-xs text-zinc-400 font-medium">{entry.name}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Platform Ranking */}
+        <PageCard className="p-8 rounded-[2.5rem] bg-zinc-900/40 border-zinc-800/50 space-y-8">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Ganhos por Plataforma</h3>
+          <div className="space-y-4">
+            {data.platformData.sort((a, b) => b.value - a.value).map((p, i) => (
+              <div key={p.id} className="group">
+                <div className="flex justify-between items-end mb-2">
+                  <div>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-1">#{i+1} {p.name}</span>
+                    <span className="text-lg font-black text-zinc-100">R$ {p.value.toFixed(2)}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-1">Média/Entrega</span>
+                    <span className="text-sm font-black text-zinc-300">R$ {p.avgPerDelivery.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800/50">
+                  <div 
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-1000" 
+                    style={{ width: `${(p.value / data.totalGross) * 100}%` }}
+                  ></div>
+                </div>
               </div>
             ))}
           </div>
         </PageCard>
 
-        {/* Profit by Platform */}
-        <PageCard className="space-y-6">
-          <h3 className="font-bold text-lg text-zinc-100">Ganhos por Plataforma</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.platformData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" horizontal={false} />
-                <XAxis type="number" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} width={100} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px' }}
-                />
-                <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </PageCard>
-
-        {/* KM Trend */}
-        <PageCard className="space-y-6">
-          <h3 className="font-bold text-lg text-zinc-100">Km Rodados por Dia</h3>
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.dailyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="date" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px' }}
-                  itemStyle={{ color: '#3b82f6' }}
-                />
-                <Bar dataKey="km" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+        {/* Efficiency Metrics */}
+        <PageCard className="p-8 rounded-[2.5rem] bg-zinc-900/40 border-zinc-800/50 space-y-8">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Métricas de Eficiência</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-6 bg-zinc-950/50 rounded-3xl border border-zinc-800/30 space-y-2">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Custo por KM</p>
+              <h4 className="text-2xl font-black text-zinc-100">R$ {data.costPerKm.toFixed(2)}</h4>
+              <p className="text-[9px] text-zinc-600 font-bold uppercase">Incluindo custos fixos</p>
+            </div>
+            <div className="p-6 bg-zinc-950/50 rounded-3xl border border-zinc-800/30 space-y-2">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ganhos/KM</p>
+              <h4 className="text-2xl font-black text-emerald-500">R$ {data.totalKm > 0 ? (data.totalGross / data.totalKm).toFixed(2) : '0.00'}</h4>
+              <p className="text-[9px] text-zinc-600 font-bold uppercase">Média bruta</p>
+            </div>
+            <div className="p-6 bg-zinc-950/50 rounded-3xl border border-zinc-800/30 space-y-2">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Média Diária</p>
+              <h4 className="text-2xl font-black text-zinc-100">R$ {data.dailyData.length > 0 ? (data.totalGross / data.dailyData.length).toFixed(2) : '0.00'}</h4>
+              <p className="text-[9px] text-zinc-600 font-bold uppercase">Ganhos brutos</p>
+            </div>
+            <div className="p-6 bg-zinc-950/50 rounded-3xl border border-zinc-800/30 space-y-2">
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Lucro Real</p>
+              <h4 className="text-2xl font-black text-emerald-500">
+                {data.totalGross > 0 ? (((data.totalGross - data.totalExp - data.allocatedFixedCosts) / data.totalGross) * 100).toFixed(1) : 0}%
+              </h4>
+              <p className="text-[9px] text-zinc-600 font-bold uppercase">Margem líquida</p>
+            </div>
           </div>
         </PageCard>
       </div>

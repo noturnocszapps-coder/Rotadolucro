@@ -14,7 +14,8 @@ import {
   Check,
   Smartphone,
   Info,
-  Instagram
+  Instagram,
+  Plus
 } from 'lucide-react';
 
 import { PageCard } from '../components/PageCard';
@@ -96,20 +97,27 @@ export const Settings = () => {
 
       {/* Platforms Section */}
       <section className="space-y-4">
-        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest px-2">Plataformas Ativas</h3>
+        <div className="flex items-center justify-between px-2">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Plataformas Ativas</h3>
+          <span className="text-[10px] font-bold text-zinc-600 uppercase">Selecione suas principais</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {(Object.keys(PLATFORM_NAMES) as PlatformType[]).map((p) => (
+          {(['shopee', 'mercadolivre', 'frete'] as PlatformType[]).map((p) => (
             <button
               key={p}
               onClick={() => togglePlatform(p)}
-              className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+              className={`flex items-center justify-between p-5 rounded-3xl border-2 transition-all group ${
                 activePlatforms.includes(p) 
-                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' 
-                  : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                  ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 shadow-lg shadow-emerald-500/10' 
+                  : 'bg-zinc-900/40 border-zinc-800/50 text-zinc-500 hover:border-zinc-700'
               }`}
             >
-              <span className="font-bold text-sm">{PLATFORM_NAMES[p]}</span>
-              {activePlatforms.includes(p) && <Check size={18} />}
+              <span className="font-black text-xs uppercase tracking-widest">{PLATFORM_NAMES[p]}</span>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                activePlatforms.includes(p) ? 'bg-emerald-500 text-zinc-950' : 'bg-zinc-800 text-zinc-600'
+              }`}>
+                {activePlatforms.includes(p) ? <Check size={14} strokeWidth={4} /> : <Plus size={14} />}
+              </div>
             </button>
           ))}
         </div>

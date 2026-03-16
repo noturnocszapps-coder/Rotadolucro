@@ -81,7 +81,7 @@ export const Onboarding = () => {
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 shadow-xl">
           {step === 1 && (
             <div className="space-y-4">
-              {(Object.keys(PLATFORM_NAMES) as PlatformType[]).map((p) => (
+              {(['shopee', 'mercadolivre', 'frete'] as PlatformType[]).map((p) => (
                 <button
                   key={p}
                   onClick={() => togglePlatform(p)}

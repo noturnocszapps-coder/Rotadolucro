@@ -1,4 +1,4 @@
-export type PlatformType = 'ifood' | 'shopee' | 'mercadolivre';
+export type PlatformType = 'shopee' | 'mercadolivre' | 'frete' | 'ifood' | 'uber' | '99' | 'indrive';
 export type TransportMode = 'motorcycle' | 'car' | 'fiorino' | 'bicycle' | 'walking' | 'scooter';
 export type ExpenseCategory = 'fuel' | 'maintenance' | 'insurance' | 'financing' | 'cleaning' | 'toll' | 'other';
 export type ShopeeVehicleType = 'Passeio' | 'Fiorino';

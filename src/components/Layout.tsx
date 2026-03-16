@@ -10,7 +10,8 @@ import {
   Settings,
   Target,
   Calculator,
-  Instagram
+  Instagram,
+  Truck
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -22,11 +23,11 @@ function cn(...inputs: ClassValue[]) {
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/work-logs', icon: ClipboardList, label: 'Registros' },
+  { path: '/freight-calculator', icon: Truck, label: 'Frete' },
   { path: '/simulator', icon: Calculator, label: 'Simulador' },
+  { path: '/reports', icon: BarChart3, label: 'Relatórios' },
   { path: '/expenses', icon: Receipt, label: 'Gastos' },
-  { path: '/fuel', icon: Fuel, label: 'Combustível' },
-  { path: '/goals', icon: Target, label: 'Metas' },
-  { path: '/settings', icon: Settings, label: 'Configurações' },
+  { path: '/settings', icon: Settings, label: 'Ajustes' },
 ];
 
 export const MobileNav = () => {

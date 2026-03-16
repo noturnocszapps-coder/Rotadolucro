@@ -38,9 +38,13 @@ export const calculateShopeeEarnings = (km: number, vehicleType: ShopeeVehicleTy
 };
 
 export const PLATFORM_NAMES = {
-  ifood: 'iFood',
   shopee: 'Shopee Entregas',
-  mercadolivre: 'Mercado Livre Entregas',
+  mercadolivre: 'Mercado Livre',
+  frete: 'Frete / Autônomo',
+  ifood: 'iFood (Legado)',
+  uber: 'Uber (Legado)',
+  '99': '99 (Legado)',
+  indrive: 'inDrive (Legado)',
 };
 
 export const TRANSPORT_MODE_NAMES = {

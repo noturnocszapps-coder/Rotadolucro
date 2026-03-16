@@ -14,7 +14,11 @@ import {
   Wallet,
   Calendar,
   BarChart3,
-  Calculator
+  Calculator,
+  Truck,
+  Package,
+  Clock,
+  ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { 
@@ -41,6 +45,8 @@ export const Dashboard = () => {
   const { user } = useAuthStore();
   const { workLogs, expenses, fuelLogs, maintenanceLogs, workProfiles, vehicleSettings } = useAppStore();
   const [platformFilter, setPlatformFilter] = React.useState<PlatformType | 'combined'>('combined');
+
+  const activePlatforms: PlatformType[] = ['shopee', 'mercadolivre', 'frete'];
 
   const metrics = useMemo(() => {
     const today = new Date();
@@ -71,18 +77,25 @@ export const Dashboard = () => {
     const monthlyVariableExp = calcExp(monthlyExpenses) + calcFuel(filterByRange(fuelLogs, startOfMn)) + calcMaint(filterByRange(maintenanceLogs, startOfMn));
     
     const monthlyFixedCosts = vehicleSettings ? (
-      vehicleSettings.insurance_monthly + 
-      vehicleSettings.financing_monthly + 
-      (vehicleSettings.ipva_annual / 12) + 
-      vehicleSettings.maintenance_monthly + 
-      vehicleSettings.other_fixed_costs
+      (vehicleSettings.insurance_monthly || 0) + 
+      (vehicleSettings.financing_monthly || 0) + 
+      ((vehicleSettings.ipva_annual || 0) / 12) + 
+      (vehicleSettings.maintenance_monthly || 0) + 
+      (vehicleSettings.other_fixed_costs || 0)
     ) : 0;
 
     const totalMonthlyExp = monthlyVariableExp + monthlyFixedCosts;
     const totalKm = monthlyLogs.reduce((acc, curr) => acc + curr.km_driven, 0);
+    const totalHours = monthlyLogs.reduce((acc, curr) => acc + curr.hours_worked, 0);
+    const totalPackages = monthlyLogs.reduce((acc, curr) => acc + (curr.packages_count || 0), 0);
+    const totalRoutes = monthlyLogs.reduce((acc, curr) => acc + (curr.routes_count || 0), 0);
+    
     const costPerKm = totalKm > 0 ? totalMonthlyExp / totalKm : 0;
+    const earningsPerKm = totalKm > 0 ? monthlyGross / totalKm : 0;
+    const earningsPerHour = totalHours > 0 ? monthlyGross / totalHours : 0;
+    const avgFreight = totalRoutes > 0 ? monthlyGross / totalRoutes : 0;
 
-    const platformProfits = Object.keys(PLATFORM_NAMES).map(p => {
+    const platformProfits = activePlatforms.map(p => {
       const pLogs = monthlyLogs.filter(l => l.platform_type === p);
       const gross = calcGross(pLogs);
       return { platform: p as PlatformType, gross };
@@ -97,7 +110,13 @@ export const Dashboard = () => {
       fixedCosts: monthlyFixedCosts,
       netProfit: monthlyGross - totalMonthlyExp,
       totalKm,
+      totalHours,
+      totalPackages,
+      totalRoutes,
       costPerKm,
+      earningsPerKm,
+      earningsPerHour,
+      avgFreight,
       topPlatform
     };
   }, [workLogs, expenses, fuelLogs, maintenanceLogs, platformFilter, vehicleSettings]);
@@ -123,150 +142,245 @@ export const Dashboard = () => {
   }, [workLogs, platformFilter]);
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-zinc-100">Painel de Controle</h2>
-          <p className="text-zinc-400 text-sm">Bem-vindo de volta, {user?.displayName?.split(' ')[0] || 'Entregador'}.</p>
+    <div className="space-y-8 pb-12">
+      <header className="flex flex-col gap-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] mb-1">
+              {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
+            </p>
+            <h2 className="text-3xl font-black text-zinc-100 tracking-tight">
+              Olá, {user?.displayName?.split(' ')[0] || 'Entregador'}
+            </h2>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-500 shadow-xl shadow-emerald-500/5">
+            <Wallet size={24} />
+          </div>
         </div>
         
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           <button 
             onClick={() => setPlatformFilter('combined')}
             className={cn(
-              "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border",
+              "px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap border shadow-lg",
               platformFilter === 'combined' 
-                ? "bg-emerald-500 text-zinc-950 border-emerald-500" 
-                : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                ? "bg-emerald-500 text-zinc-950 border-emerald-500 shadow-emerald-500/20" 
+                : "bg-zinc-900 text-zinc-500 border-zinc-800 hover:border-zinc-700"
             )}
           >
             Combinado
           </button>
-          {workProfiles.map(p => (
+          {activePlatforms.map(platform => (
             <button 
-              key={p.id}
-              onClick={() => setPlatformFilter(p.platform_type)}
+              key={platform}
+              onClick={() => setPlatformFilter(platform)}
               className={cn(
-                "px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border",
-                platformFilter === p.platform_type 
-                  ? "bg-emerald-500 text-zinc-950 border-emerald-500" 
-                  : "bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700"
+                "px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap border shadow-lg",
+                platformFilter === platform 
+                  ? "bg-emerald-500 text-zinc-950 border-emerald-500 shadow-emerald-500/20" 
+                  : "bg-zinc-900 text-zinc-500 border-zinc-800 hover:border-zinc-700"
               )}
             >
-              {PLATFORM_NAMES[p.platform_type]}
+              {PLATFORM_NAMES[platform]}
             </button>
           ))}
         </div>
       </header>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Link to="/work-logs/new" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-emerald-500/50 transition-all group">
-          <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-            <Plus size={20} />
-          </div>
-          <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Novo Registro</span>
-        </Link>
-        <Link to="/simulator" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-emerald-500/50 transition-all group">
-          <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-            <Calculator size={20} />
-          </div>
-          <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Simular Rota</span>
-        </Link>
-        <Link to="/expenses/new" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-red-500/50 transition-all group">
-          <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-            <Receipt size={20} />
-          </div>
-          <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Gasto</span>
-        </Link>
-        <Link to="/fuel/new" className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex flex-col items-center gap-2 hover:border-blue-500/50 transition-all group">
-          <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-            <Fuel size={20} />
-          </div>
-          <span className="text-[10px] font-bold uppercase text-zinc-400 text-center">Abastecer</span>
-        </Link>
-      </div>
+      {/* Quick Actions Grid */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Ações Rápidas</h3>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+          <Link to="/work-logs/new" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-emerald-500/50 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+              <Plus size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Novo Registro</span>
+          </Link>
+          <Link to="/simulator" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-emerald-500/50 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+              <Calculator size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Simular Rota</span>
+          </Link>
+          <Link to="/expenses/new" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-red-500/50 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+              <Receipt size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Gasto</span>
+          </Link>
+          <Link to="/fuel/new" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-blue-500/50 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+              <Fuel size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Abastecer</span>
+          </Link>
+          <Link to="/freight-calculator" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-emerald-500/50 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+              <Truck size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Calcular Frete</span>
+          </Link>
+          <Link to="/reports" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-zinc-500 transition-all group shadow-xl">
+            <div className="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
+              <BarChart3 size={24} />
+            </div>
+            <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Relatórios</span>
+          </Link>
+        </div>
+      </section>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          label="Hoje" 
-          value={`R$ ${metrics.dailyGross.toFixed(2)}`} 
-          icon={<Calendar size={18} />}
-          color="emerald"
-        />
-        <StatCard 
-          label="Despesas (Mês)" 
-          value={`R$ ${metrics.monthlyExp.toFixed(2)}`} 
-          icon={<Receipt size={18} />}
-          color="red"
-        />
-        <StatCard 
-          label="Lucro Líquido" 
-          value={`R$ ${metrics.netProfit.toFixed(2)}`} 
-          icon={<Wallet size={18} />}
-          color={metrics.netProfit >= 0 ? "emerald" : "red"}
-        />
-        <StatCard 
-          label="Custo por KM" 
-          value={`R$ ${metrics.costPerKm.toFixed(2)}`} 
-          icon={<Navigation size={18} />}
-          color="blue"
-        />
-      </div>
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Resumo Financeiro</h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-zinc-900 border border-zinc-800/50 p-6 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <TrendingUp size={48} className="text-emerald-500" />
+            </div>
+            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Hoje</p>
+            <h4 className="text-2xl font-black text-zinc-100">R$ {metrics.dailyGross.toFixed(2)}</h4>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800/50 p-6 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Wallet size={48} className="text-emerald-500" />
+            </div>
+            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Lucro Líquido</p>
+            <h4 className={cn("text-2xl font-black", metrics.netProfit >= 0 ? "text-emerald-500" : "text-red-500")}>
+              R$ {metrics.netProfit.toFixed(2)}
+            </h4>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800/50 p-6 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Receipt size={48} className="text-red-500" />
+            </div>
+            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Despesas do Mês</p>
+            <h4 className="text-2xl font-black text-zinc-100">R$ {metrics.monthlyExp.toFixed(2)}</h4>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800/50 p-6 rounded-[2rem] shadow-xl relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Navigation size={48} className="text-blue-500" />
+            </div>
+            <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Ganho por KM</p>
+            <h4 className="text-2xl font-black text-zinc-100">R$ {metrics.earningsPerKm.toFixed(2)}</h4>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="bg-zinc-900/50 border border-zinc-800/30 p-4 rounded-3xl">
+            <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Ganho por Hora</p>
+            <p className="text-lg font-black text-zinc-200">R$ {metrics.earningsPerHour.toFixed(2)}</p>
+          </div>
+          <div className="bg-zinc-900/50 border border-zinc-800/30 p-4 rounded-3xl">
+            <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Rotas / Entregas</p>
+            <p className="text-lg font-black text-zinc-200">{metrics.totalRoutes}</p>
+          </div>
+          <div className="bg-zinc-900/50 border border-zinc-800/30 p-4 rounded-3xl">
+            <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Total de Pacotes</p>
+            <p className="text-lg font-black text-zinc-200">{metrics.totalPackages}</p>
+          </div>
+          <div className="bg-zinc-900/50 border border-zinc-800/30 p-4 rounded-3xl">
+            <p className="text-zinc-500 text-[9px] font-black uppercase tracking-widest mb-1">Frete Médio</p>
+            <p className="text-lg font-black text-zinc-200">R$ {metrics.avgFreight.toFixed(2)}</p>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Most Profitable Platform */}
-        <PageCard className="lg:col-span-1 flex flex-col justify-center border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-emerald-500 rounded-xl text-zinc-950">
-                <TrendingUp size={24} />
+        {/* Insights */}
+        <div className="lg:col-span-1 space-y-4">
+          <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Inteligência</h3>
+          <PageCard className="h-full flex flex-col justify-center border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent p-8 rounded-[2.5rem]">
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-zinc-950 shadow-2xl shadow-emerald-500/20">
+                  <TrendingUp size={28} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em]">Destaque</p>
+                  <h3 className="text-xl font-black text-zinc-100 tracking-tight">Melhor Performance</h3>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Destaque do Mês</p>
-                <h3 className="text-lg font-bold">Plataforma mais lucrativa</h3>
-              </div>
+              
+              {metrics.topPlatform ? (
+                <div className="space-y-3">
+                  <h4 className="text-4xl font-black text-zinc-100 tracking-tighter">{PLATFORM_NAMES[metrics.topPlatform]}</h4>
+                  <p className="text-zinc-400 text-sm leading-relaxed">Sua maior fonte de receita este mês. Continue focando aqui para maximizar seus lucros.</p>
+                  <Link to="/reports" className="inline-flex items-center gap-2 text-emerald-500 font-black uppercase text-[10px] tracking-widest hover:gap-3 transition-all pt-2">
+                    Análise Completa <ChevronRight size={14} />
+                  </Link>
+                </div>
+              ) : (
+                <div className="py-6 text-center">
+                  <p className="text-zinc-500 text-sm italic">Inicie seus registros para gerar insights inteligentes.</p>
+                </div>
+              )}
             </div>
-            
-            {metrics.topPlatform ? (
-              <div className="pt-4 space-y-2">
-                <h4 className="text-3xl font-black text-zinc-100">{PLATFORM_NAMES[metrics.topPlatform]}</h4>
-                <p className="text-zinc-400 text-sm">Responsável pela maior parte dos seus ganhos brutos este mês.</p>
-              </div>
-            ) : (
-              <p className="text-zinc-500 text-sm pt-4 italic">Nenhum dado registrado este mês.</p>
-            )}
-          </div>
-        </PageCard>
+          </PageCard>
+        </div>
 
-        {/* Monthly Summary Chart */}
-        <PageCard className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="font-bold text-lg flex items-center gap-2">
-              <BarChart3 size={20} className="text-emerald-500" />
-              Resumo dos Últimos 7 Dias
-            </h3>
-            <Link to="/reports" className="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1">
-              Ver Relatórios <ArrowUpRight size={14} />
+        {/* Chart */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Desempenho Semanal</h3>
+            <Link to="/reports" className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:underline">
+              Ver Detalhes
             </Link>
           </div>
-          <div className="h-[240px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="name" stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717a" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `R$${v}`} />
-                <Tooltip 
-                  cursor={{ fill: '#27272a', opacity: 0.4 }}
-                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '12px' }}
-                  itemStyle={{ color: '#10b981' }}
-                />
-                <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </PageCard>
+          <PageCard className="p-8 rounded-[2.5rem] bg-zinc-900/40 border-zinc-800/50">
+            <div className="h-[280px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <defs>
+                    <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} opacity={0.5} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#71717a" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    dy={10}
+                    fontFamily="Inter"
+                    fontWeight={700}
+                  />
+                  <YAxis 
+                    stroke="#71717a" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tickFormatter={(v) => `R$${v}`} 
+                    fontFamily="Inter"
+                    fontWeight={700}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: '#27272a', opacity: 0.4 }}
+                    contentStyle={{ 
+                      backgroundColor: '#09090b', 
+                      border: '1px solid #27272a', 
+                      borderRadius: '16px',
+                      boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'
+                    }}
+                    itemStyle={{ color: '#10b981', fontWeight: 900, fontSize: '12px' }}
+                    labelStyle={{ color: '#71717a', marginBottom: '4px', fontWeight: 700, fontSize: '10px' }}
+                  />
+                  <Bar dataKey="value" fill="url(#barGradient)" radius={[6, 6, 0, 0]} barSize={32} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </PageCard>
+        </div>
       </div>
     </div>
   );
