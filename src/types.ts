@@ -1,99 +1,77 @@
-export type PlatformType = 'ifood' | 'shopee' | 'mercadolivre';
-export type TransportMode = 'motorcycle' | 'car' | 'fiorino' | 'bicycle' | 'walking' | 'scooter';
-export type ExpenseCategory = 'fuel' | 'maintenance' | 'insurance' | 'financing' | 'cleaning' | 'toll' | 'other';
-export type ShopeeVehicleType = 'Passeio' | 'Fiorino';
+export type UserRole = 'passenger' | 'driver' | 'admin';
+export type VerificationStatus = 'pending' | 'approved' | 'rejected';
+export type RequestStatus = 'open' | 'filled' | 'cancelled';
 
 export interface Profile {
   id: string;
-  name: string;
-  email: string;
-  created_at: string;
+  role: UserRole;
+  fullName: string;
+  phone: string;
+  avatarUrl?: string;
+  createdAt: string;
 }
 
-export interface UserWorkProfile {
-  id: string;
-  user_id: string;
-  platform_type: PlatformType;
-  active: boolean;
-  created_at: string;
+export interface DriverProfile extends Profile {
+  status: VerificationStatus;
+  documentsUrl?: string;
+  driverDashId?: string;
+  isAvailable: boolean;
 }
 
-export interface VehicleSettings {
+export interface TransportRequest {
   id: string;
-  user_id: string;
-  platform_type?: PlatformType;
-  transport_mode: TransportMode;
-  vehicle_model: string;
-  fuel_type: string;
-  average_consumption: number;
-  insurance_monthly: number;
-  financing_monthly: number;
-  ipva_annual: number;
-  maintenance_monthly: number;
-  other_fixed_costs: number;
-  created_at: string;
+  passengerId: string;
+  eventName: string;
+  eventLocation: string;
+  eventDate: string;
+  status: RequestStatus;
+  description: string;
+  createdAt: string;
 }
 
-export interface WorkLog {
+export interface EarningsRecord {
   id: string;
   user_id: string;
-  platform_type: PlatformType;
   date: string;
-  gross_amount: number;
-  bonus_amount: number;
+  platform: string;
+  revenue: number;
+  km: number;
   hours_worked: number;
-  km_driven: number;
-  deliveries_count: number;
-  packages_count: number;
-  routes_count: number;
+  packages_count?: number;
+  routes_count?: number;
+  fuel_cost?: number;
+  extra_expense?: number;
   notes?: string;
-  vehicle_type?: ShopeeVehicleType;
   created_at: string;
 }
 
-export interface Expense {
+export interface ExpenseRecord {
   id: string;
   user_id: string;
   date: string;
-  category: ExpenseCategory;
-  description: string;
+  category: string;
   amount: number;
-  platform_type?: PlatformType;
+  description?: string;
   created_at: string;
 }
 
-export interface FuelLog {
-  id: string;
-  user_id: string;
-  date: string;
-  liters: number;
-  price_per_liter: number;
-  total_value: number;
-  odometer_km: number;
-  vehicle_type: string;
-  platform_type?: PlatformType;
-  created_at: string;
+export interface FreightCalculation {
+  distance_km: number;
+  packages_count: number;
+  estimated_time: number;
+  fuel_cost: number;
+  toll: number;
+  additional_cost: number;
+  desired_profit: number;
+  cost_per_km: number;
+  cost_per_hour: number;
 }
 
-export interface MaintenanceLog {
-  id: string;
-  user_id: string;
-  date: string;
-  type: string;
-  description: string;
-  amount: number;
-  odometer_km: number;
-  platform_type?: PlatformType;
-  created_at: string;
-}
-
-export interface Goal {
-  id: string;
-  user_id: string;
-  platform_type?: PlatformType;
-  target_amount: number;
-  current_amount: number;
-  month: string;
-  active: boolean;
-  created_at: string;
+export interface FreightResult {
+  total_cost: number;
+  min_freight: number;
+  recommended_freight: number;
+  estimated_profit: number;
+  profit_per_km: number;
+  profit_per_hour: number;
 }
