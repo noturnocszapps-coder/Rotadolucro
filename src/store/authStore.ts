@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { auth } from '../lib/firebase';
 import { User } from 'firebase/auth';
 
+import { useAppStore } from './useAppStore';
+
 interface AuthState {
   user: User | null;
   loading: boolean;
@@ -17,6 +19,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user, loading: false, initialized: true }),
   signOut: async () => {
     await auth.signOut();
+    useAppStore.getState().reset();
     set({ user: null });
   },
 }));

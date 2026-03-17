@@ -11,7 +11,7 @@ import {
   FileText,
   TrendingUp
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface WorkLogDetailsProps {
@@ -26,12 +26,12 @@ export const WorkLogDetails = ({ log }: WorkLogDetailsProps) => {
       {/* Header Info */}
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex flex-col items-center justify-center text-emerald-400 border border-emerald-500/20">
-          <span className="text-xs font-bold uppercase">{format(new Date(log.date), 'MMM', { locale: ptBR })}</span>
-          <span className="text-2xl font-black leading-none">{format(new Date(log.date), 'dd')}</span>
+          <span className="text-xs font-bold uppercase">{format(parseISO(log.date), 'MMM', { locale: ptBR })}</span>
+          <span className="text-2xl font-black leading-none">{format(parseISO(log.date), 'dd')}</span>
         </div>
         <div>
           <h2 className="text-2xl font-black text-white">{PLATFORM_NAMES[log.platform_type]}</h2>
-          <p className="text-zinc-500 font-medium">{format(new Date(log.date), "EEEE, d 'de' MMMM", { locale: ptBR })}</p>
+          <p className="text-zinc-500 font-medium">{format(parseISO(log.date), "EEEE, d 'de' MMMM", { locale: ptBR })}</p>
         </div>
       </div>
 

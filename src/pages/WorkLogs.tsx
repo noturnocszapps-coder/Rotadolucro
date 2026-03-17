@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { PLATFORM_NAMES } from '../constants';
 import { 
@@ -16,13 +16,13 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { PageCard } from '../components/PageCard';
 import { BottomSheet } from '../components/BottomSheet';
 import { WorkLogDetails } from '../components/WorkLogDetails';
-import { WorkLog } from '../types';
+import { WorkLog, PlatformType } from '../types';
 
 export const WorkLogs = () => {
   const { workLogs, deleteWorkLog } = useAppStore();
@@ -32,6 +32,23 @@ export const WorkLogs = () => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [platformFilter, setPlatformFilter] = useState<PlatformType | 'all'>('all');
+  const [dateFilter, setDateFilter] = useState(new Date().toISOString().substring(0, 7));
+
+  const filteredLogs = useMemo(() => {
+    return workLogs.filter(log => {
+      const matchesPlatform = platformFilter === 'all' || log.platform_type === platformFilter;
+      const matchesDate = log.date.startsWith(dateFilter);
+      return matchesPlatform && matchesDate;
+    }).sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
+  }, [workLogs, platformFilter, dateFilter]);
+
+  const stats = useMemo(() => {
+    const totalEarnings = filteredLogs.reduce((acc, curr) => acc + curr.gross_amount + (curr.bonus_amount || 0), 0);
+    const totalKm = filteredLogs.reduce((acc, curr) => acc + curr.km_driven, 0);
+    const totalHours = filteredLogs.reduce((acc, curr) => acc + curr.hours_worked, 0);
+    return { totalEarnings, totalKm, totalHours };
+  }, [filteredLogs]);
 
   const handleLogClick = (log: WorkLog) => {
     setSelectedLog(log);
@@ -74,8 +91,48 @@ export const WorkLogs = () => {
         </Link>
       </header>
 
+      {/* Filters */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-1 flex items-center">
+          <select 
+            value={platformFilter}
+            onChange={(e) => setPlatformFilter(e.target.value as any)}
+            className="w-full bg-transparent text-zinc-300 text-xs font-bold uppercase tracking-wider p-2 outline-none"
+          >
+            <option value="all">Todas Plataformas</option>
+            <option value="shopee">Shopee</option>
+            <option value="mercadolivre">Mercado Livre</option>
+            <option value="frete">Frete Particular</option>
+          </select>
+        </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-1 flex items-center">
+          <input 
+            type="month" 
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full bg-transparent text-zinc-300 text-xs font-bold uppercase tracking-wider p-2 outline-none"
+          />
+        </div>
+      </div>
+
+      {/* Stats Summary */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 text-center">
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Ganhos</p>
+          <p className="text-sm font-black text-emerald-400">R$ {stats.totalEarnings.toFixed(0)}</p>
+        </div>
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 text-center">
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Distância</p>
+          <p className="text-sm font-black text-white">{stats.totalKm.toFixed(0)}km</p>
+        </div>
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 text-center">
+          <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Tempo</p>
+          <p className="text-sm font-black text-white">{stats.totalHours.toFixed(0)}h</p>
+        </div>
+      </div>
+
       <div className="space-y-4">
-        {workLogs.length === 0 ? (
+        {filteredLogs.length === 0 ? (
           <PageCard className="text-center py-12 space-y-4">
             <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mx-auto text-zinc-500">
               <Calendar size={32} />
@@ -84,20 +141,20 @@ export const WorkLogs = () => {
             <Link to="/work-logs/new" className="text-emerald-400 font-bold hover:underline inline-block">Adicionar primeiro registro</Link>
           </PageCard>
         ) : (
-          workLogs.map((log) => (
+          filteredLogs.map((log) => (
             <div key={log.id} onClick={() => handleLogClick(log)} className="block cursor-pointer">
               <PageCard className="flex items-center justify-between gap-4 hover:border-zinc-700 transition-all group">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex flex-col items-center justify-center text-emerald-400">
-                    <span className="text-[10px] font-bold uppercase">{format(new Date(log.date), 'MMM', { locale: ptBR })}</span>
-                    <span className="text-lg font-bold leading-none">{format(new Date(log.date), 'dd')}</span>
+                    <span className="text-[10px] font-bold uppercase">{format(parseISO(log.date), 'MMM', { locale: ptBR })}</span>
+                    <span className="text-lg font-bold leading-none">{format(parseISO(log.date), 'dd')}</span>
                   </div>
                   <div>
                     <h3 className="font-bold text-zinc-100">{PLATFORM_NAMES[log.platform_type]}</h3>
                     <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider mt-1">
                       <span className="flex items-center gap-1"><Clock size={12} /> {log.hours_worked}h</span>
                       <span className="flex items-center gap-1"><Navigation size={12} /> {log.km_driven}km</span>
-                      {(log.deliveries_count || 0) > 0 && <span className="flex items-center gap-1"><Package size={12} /> {log.deliveries_count}</span>}
+                      {(log.packages_count || 0) > 0 && <span className="flex items-center gap-1"><Package size={12} /> {log.packages_count}</span>}
                     </div>
                   </div>
                 </div>

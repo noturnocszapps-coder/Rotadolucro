@@ -48,6 +48,7 @@ interface AppState {
   deleteWorkLog: (id: string) => Promise<void>;
   updateExpense: (id: string, expense: Partial<Expense>) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
+  reset: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -60,6 +61,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   goals: [],
   loading: false,
   initialized: false,
+
+  reset: () => set({
+    workProfiles: [],
+    vehicleSettings: null,
+    workLogs: [],
+    expenses: [],
+    fuelLogs: [],
+    maintenanceLogs: [],
+    goals: [],
+    loading: false,
+    initialized: false
+  }),
 
   fetchData: async (userId: string) => {
     set({ loading: true });

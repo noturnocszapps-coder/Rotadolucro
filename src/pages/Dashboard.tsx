@@ -70,7 +70,7 @@ export const Dashboard = () => {
 
     const filterByRange = (items: any[], start: Date, end: Date = today) => 
       items.filter(item => {
-        const d = new Date(item.date);
+        const d = parseISO(item.date);
         const inRange = isWithinInterval(d, { start, end });
         const matchesPlatform = platformFilter === 'combined' || item.platform_type === platformFilter;
         return inRange && matchesPlatform;

@@ -12,7 +12,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { PlatformType, Expense } from '../types';
 import { PLATFORM_NAMES } from '../constants';
@@ -48,7 +48,7 @@ export const Expenses = () => {
       const matchesPlatform = platformFilter === 'all' || exp.platform_type === platformFilter;
       const matchesDate = exp.date.startsWith(dateFilter);
       return matchesPlatform && matchesDate;
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }).sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime());
   }, [expenses, platformFilter, dateFilter]);
 
   const stats = useMemo(() => {
@@ -172,8 +172,8 @@ export const Expenses = () => {
               <PageCard className="flex items-center justify-between gap-4 hover:border-zinc-700 transition-all group">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-red-500/10 rounded-2xl flex flex-col items-center justify-center text-red-500">
-                    <span className="text-[10px] font-bold uppercase">{format(new Date(exp.date), 'MMM', { locale: ptBR })}</span>
-                    <span className="text-lg font-bold leading-none">{format(new Date(exp.date), 'dd')}</span>
+                    <span className="text-[10px] font-bold uppercase">{format(parseISO(exp.date), 'MMM', { locale: ptBR })}</span>
+                    <span className="text-lg font-bold leading-none">{format(parseISO(exp.date), 'dd')}</span>
                   </div>
                   <div>
                     <h3 className="font-bold text-zinc-100">{exp.description}</h3>

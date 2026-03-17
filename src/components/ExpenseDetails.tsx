@@ -8,7 +8,7 @@ import {
   FileText,
   Truck
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface ExpenseDetailsProps {
@@ -31,12 +31,12 @@ export const ExpenseDetails = ({ expense }: ExpenseDetailsProps) => {
       {/* Header Info */}
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex flex-col items-center justify-center text-red-500 border border-red-500/20">
-          <span className="text-xs font-bold uppercase">{format(new Date(expense.date), 'MMM', { locale: ptBR })}</span>
-          <span className="text-2xl font-black leading-none">{format(new Date(expense.date), 'dd')}</span>
+          <span className="text-xs font-bold uppercase">{format(parseISO(expense.date), 'MMM', { locale: ptBR })}</span>
+          <span className="text-2xl font-black leading-none">{format(parseISO(expense.date), 'dd')}</span>
         </div>
         <div>
           <h2 className="text-2xl font-black text-white">{expense.description}</h2>
-          <p className="text-zinc-500 font-medium">{format(new Date(expense.date), "EEEE, d 'de' MMMM", { locale: ptBR })}</p>
+          <p className="text-zinc-500 font-medium">{format(parseISO(expense.date), "EEEE, d 'de' MMMM", { locale: ptBR })}</p>
         </div>
       </div>
 
