@@ -18,8 +18,9 @@ import {
 import { format } from 'date-fns';
 
 export const WorkLogForm = () => {
-  const { workProfiles, addWorkLog } = useAppStore();
+  const { workProfiles, addWorkLog, updateWorkLog, workLogs } = useAppStore();
   const navigate = useNavigate();
+  const { id } = useParams();
   const [platform, setPlatform] = useState<PlatformType | ''>('');
   const [loading, setLoading] = useState(false);
   
@@ -36,18 +37,33 @@ export const WorkLogForm = () => {
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    if (workProfiles.length === 1) {
+    if (id) {
+      const log = workLogs.find(l => l.id === id);
+      if (log) {
+        setPlatform(log.platform_type);
+        setDate(log.date);
+        setGrossAmount(log.gross_amount);
+        setBonusAmount(log.bonus_amount || 0);
+        setHoursWorked(log.hours_worked);
+        setKmDriven(log.km_driven);
+        setDeliveriesCount(log.deliveries_count || 0);
+        setPackagesCount(log.packages_count || 0);
+        setRoutesCount(log.routes_count || 1);
+        if (log.vehicle_type) setVehicleType(log.vehicle_type);
+        setNotes(log.notes || '');
+      }
+    } else if (workProfiles.length === 1) {
       setPlatform(workProfiles[0].platform_type);
     }
-  }, [workProfiles]);
+  }, [id, workLogs, workProfiles]);
 
   // Shopee auto-calc
   useEffect(() => {
-    if (platform === 'shopee' && kmDriven > 0) {
+    if (platform === 'shopee' && kmDriven > 0 && !id) {
       const earnings = calculateShopeeEarnings(kmDriven, vehicleType);
       setGrossAmount(earnings);
     }
-  }, [platform, kmDriven, vehicleType]);
+  }, [platform, kmDriven, vehicleType, id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +71,7 @@ export const WorkLogForm = () => {
     
     setLoading(true);
     try {
-      await addWorkLog({
+      const logData = {
         platform_type: platform as PlatformType,
         date,
         gross_amount: Number(grossAmount),
@@ -67,7 +83,13 @@ export const WorkLogForm = () => {
         routes_count: Number(routesCount),
         vehicle_type: platform === 'shopee' ? vehicleType : undefined,
         notes
-      });
+      };
+
+      if (id) {
+        await updateWorkLog(id, logData);
+      } else {
+        await addWorkLog(logData);
+      }
       navigate('/work-logs');
     } catch (error) {
       console.error('Error saving work log:', error);
@@ -93,7 +115,7 @@ export const WorkLogForm = () => {
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-zinc-800 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
-        <h1 className="text-2xl font-bold tracking-tight">Novo Registro de Trabalho</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{id ? 'Editar Registro' : 'Novo Registro de Trabalho'}</h1>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6">

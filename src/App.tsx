@@ -48,6 +48,7 @@ export default function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/work-logs" element={<WorkLogs />} />
           <Route path="/work-logs/new" element={<WorkLogForm />} />
+          <Route path="/work-logs/edit/:id" element={<WorkLogForm />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/expenses/new" element={<ExpenseForm />} />
           <Route path="/fuel" element={<FuelLogs />} />

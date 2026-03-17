@@ -44,6 +44,8 @@ interface AppState {
   updateVehicleSettings: (settings: Omit<VehicleSettings, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
   updateWorkProfiles: (platforms: PlatformType[]) => Promise<void>;
   updateGoal: (goal: Omit<Goal, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
+  updateWorkLog: (id: string, log: Partial<WorkLog>) => Promise<void>;
+  deleteWorkLog: (id: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -220,6 +222,30 @@ export const useAppStore = create<AppState>((set, get) => ({
       set((state) => ({ goals: [newGoal, ...state.goals] }));
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  updateWorkLog: async (id, log) => {
+    const path = 'work_logs';
+    try {
+      await updateDoc(doc(db, path, id), log);
+      set((state) => ({
+        workLogs: state.workLogs.map((l) => (l.id === id ? { ...l, ...log } : l))
+      }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  deleteWorkLog: async (id) => {
+    const path = 'work_logs';
+    try {
+      await deleteDoc(doc(db, path, id));
+      set((state) => ({
+        workLogs: state.workLogs.filter((l) => l.id !== id)
+      }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
     }
   }
 }));
