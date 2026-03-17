@@ -34,6 +34,7 @@ interface AppState {
   maintenanceLogs: MaintenanceLog[];
   goals: Goal[];
   loading: boolean;
+  initialized: boolean;
   
   fetchData: (userId: string) => Promise<void>;
   addWorkLog: (log: Omit<WorkLog, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
@@ -54,6 +55,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   maintenanceLogs: [],
   goals: [],
   loading: false,
+  initialized: false,
 
   fetchData: async (userId: string) => {
     set({ loading: true });
@@ -86,11 +88,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         fuelLogs: fuels as FuelLog[],
         maintenanceLogs: maints as MaintenanceLog[],
         goals: gls as Goal[],
-        loading: false
+        loading: false,
+        initialized: true
       });
     } catch (error) {
       console.error('Error fetching data:', error);
-      set({ loading: false });
+      set({ loading: false, initialized: true });
     }
   },
 

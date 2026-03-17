@@ -67,14 +67,14 @@ export const Settings = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-10 pb-16 px-4 md:px-0">
+    <div className="max-w-2xl mx-auto space-y-4 pb-16 px-4 md:px-0">
       <header className="pt-4">
         <h2 className="text-4xl font-black text-white tracking-tight">Ajustes</h2>
         <p className="text-zinc-500 font-medium mt-1">Gerencie sua conta e preferências operacionais.</p>
       </header>
  
       {/* Perfil do Usuário */}
-      <section className="space-y-4">
+      <section className="space-y-2">
         <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] px-1">Perfil do Usuário</h3>
         <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl overflow-hidden backdrop-blur-sm">
           <div className="p-5 flex items-center gap-5 border-b border-zinc-800/50">
@@ -102,7 +102,7 @@ export const Settings = () => {
       </section>
  
       {/* Plataformas Ativas */}
-      <section className="space-y-4">
+      <section className="space-y-2">
         <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] px-1">Plataformas Ativas</h3>
         <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl p-2 backdrop-blur-sm">
           <div className="grid grid-cols-1 gap-1">
@@ -139,7 +139,7 @@ export const Settings = () => {
       </section>
  
       {/* Configurações de Operação */}
-      <section className="space-y-4">
+      <section className="space-y-2">
         <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] px-1">Configurações de Operação</h3>
         <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl p-6 space-y-8 backdrop-blur-sm">
           {/* Meta Diária */}
@@ -197,7 +197,7 @@ export const Settings = () => {
       </section>
 
       {/* Preferências */}
-      <section className="space-y-4">
+      <section className="space-y-2">
         <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] px-1">Preferências</h3>
         <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl p-2 backdrop-blur-sm">
           <div className="flex items-center justify-between p-4 rounded-2xl text-zinc-400 hover:bg-zinc-800/30 transition-colors">
@@ -233,7 +233,7 @@ export const Settings = () => {
       </section>
  
       {/* Informações do App */}
-      <section className="space-y-4">
+      <section className="space-y-2">
         <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] px-1">Informações do App</h3>
         <div className="bg-zinc-900/40 border border-zinc-800/50 rounded-3xl p-6 space-y-5 backdrop-blur-sm">
           <div className="flex items-center justify-between">
