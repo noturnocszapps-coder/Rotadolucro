@@ -46,6 +46,8 @@ interface AppState {
   updateGoal: (goal: Omit<Goal, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
   updateWorkLog: (id: string, log: Partial<WorkLog>) => Promise<void>;
   deleteWorkLog: (id: string) => Promise<void>;
+  updateExpense: (id: string, expense: Partial<Expense>) => Promise<void>;
+  deleteExpense: (id: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -243,6 +245,30 @@ export const useAppStore = create<AppState>((set, get) => ({
       await deleteDoc(doc(db, path, id));
       set((state) => ({
         workLogs: state.workLogs.filter((l) => l.id !== id)
+      }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, path);
+    }
+  },
+
+  updateExpense: async (id, expense) => {
+    const path = 'expenses';
+    try {
+      await updateDoc(doc(db, path, id), expense);
+      set((state) => ({
+        expenses: state.expenses.map((e) => (e.id === id ? { ...e, ...expense } : e))
+      }));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  },
+
+  deleteExpense: async (id) => {
+    const path = 'expenses';
+    try {
+      await deleteDoc(doc(db, path, id));
+      set((state) => ({
+        expenses: state.expenses.filter((e) => e.id !== id)
       }));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, path);

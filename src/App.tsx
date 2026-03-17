@@ -21,6 +21,7 @@ import { Goals } from './pages/Goals';
 import { RouteSimulator } from './pages/RouteSimulator';
 import { FreightCalculator } from './pages/FreightCalculator';
 import { Settings } from './pages/Settings';
+import { PatchNotes } from './pages/PatchNotes';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 
@@ -51,15 +52,17 @@ export default function App() {
           <Route path="/work-logs/edit/:id" element={<WorkLogForm />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/expenses/new" element={<ExpenseForm />} />
+          <Route path="/expenses/edit/:id" element={<ExpenseForm />} />
           <Route path="/fuel" element={<FuelLogs />} />
           <Route path="/fuel/new" element={<FuelForm />} />
           <Route path="/maintenance" element={<MaintenanceLogs />} />
           <Route path="/maintenance/new" element={<MaintenanceForm />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route path="/relatorios" element={<Reports />} />
           <Route path="/goals" element={<Goals />} />
           <Route path="/simulator" element={<RouteSimulator />} />
           <Route path="/freight-calculator" element={<FreightCalculator />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/patch-notes" element={<PatchNotes />} />
         </Route>
       </Routes>
     </Router>

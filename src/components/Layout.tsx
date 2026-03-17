@@ -13,19 +13,14 @@ import {
   Instagram,
   Truck
 } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '../lib/utils';
 
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/work-logs', icon: ClipboardList, label: 'Registros' },
   { path: '/freight-calculator', icon: Truck, label: 'Frete' },
   { path: '/simulator', icon: Calculator, label: 'Simulador' },
-  { path: '/reports', icon: BarChart3, label: 'Relatórios' },
+  { path: '/relatorios', icon: BarChart3, label: 'Relatórios' },
   { path: '/expenses', icon: Receipt, label: 'Gastos' },
   { path: '/settings', icon: Settings, label: 'Ajustes' },
 ];
@@ -65,7 +60,7 @@ export const Header = () => {
             <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-black border border-emerald-500/20 uppercase tracking-widest">
               Alpha
             </span>
-            <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-tighter">v1.0.4</span>
+            <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-tighter">v1.0.6</span>
           </div>
         </div>
       </div>

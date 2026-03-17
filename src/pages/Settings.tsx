@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/authStore';
 import { useAppStore } from '../store/useAppStore';
 import { PLATFORM_NAMES, TRANSPORT_MODE_NAMES } from '../constants';
 import { PlatformType, TransportMode } from '../types';
+import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   Truck, 
@@ -15,7 +16,8 @@ import {
   Smartphone,
   Info,
   Instagram,
-  Plus
+  Plus,
+  Sparkles
 } from 'lucide-react';
 
 import { PageCard } from '../components/PageCard';
@@ -23,6 +25,7 @@ import { PageCard } from '../components/PageCard';
 export const Settings = () => {
   const { user, signOut } = useAuthStore();
   const { workProfiles, vehicleSettings, goals, updateWorkProfiles, updateVehicleSettings, updateGoal } = useAppStore();
+  const navigate = useNavigate();
   
   const [activePlatforms, setActivePlatforms] = useState<PlatformType[]>(
     workProfiles.map(p => p.platform_type)
@@ -239,11 +242,29 @@ export const Settings = () => {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-0.5">
               <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Versão Atual</span>
-              <span className="font-black text-white text-lg">1.0.4</span>
+              <span className="font-black text-white text-lg">1.0.6</span>
             </div>
-            <span className="bg-amber-500/10 text-amber-500 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border border-amber-500/20">Alpha Test</span>
+            <span className="bg-emerald-500/10 text-emerald-500 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border border-emerald-500/20">Novo</span>
           </div>
           
+          <div className="h-px bg-zinc-800/50" />
+
+          <button 
+            onClick={() => navigate('/patch-notes')}
+            className="w-full flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                <Sparkles size={20} />
+              </div>
+              <div className="flex flex-col items-start">
+                <span className="text-zinc-300 font-bold">Novidades</span>
+                <span className="text-zinc-600 text-[10px] font-black uppercase tracking-widest">Veja o que mudou</span>
+              </div>
+            </div>
+            <ChevronRight size={18} className="text-zinc-700 group-hover:text-emerald-500 transition-colors" />
+          </button>
+
           <div className="h-px bg-zinc-800/50" />
           
           <div className="flex items-center justify-between">

@@ -1,20 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { ExpenseCategory, PlatformType } from '../types';
 import { PLATFORM_NAMES } from '../constants';
 import { ArrowLeft, Save, Calendar, DollarSign, Tag, FileText } from 'lucide-react';
 import { format } from 'date-fns';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '../lib/utils';
 
 export const ExpenseForm = () => {
-  const { addExpense, workProfiles } = useAppStore();
+  const { addExpense, updateExpense, expenses, workProfiles } = useAppStore();
   const navigate = useNavigate();
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
 
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -22,6 +18,19 @@ export const ExpenseForm = () => {
   const [amount, setAmount] = useState<number>(0);
   const [description, setDescription] = useState('');
   const [platformType, setPlatformType] = useState<PlatformType | ''>('');
+
+  useEffect(() => {
+    if (id) {
+      const expense = expenses.find(e => e.id === id);
+      if (expense) {
+        setDate(expense.date);
+        setCategory(expense.category);
+        setAmount(expense.amount);
+        setDescription(expense.description);
+        setPlatformType(expense.platform_type || '');
+      }
+    }
+  }, [id, expenses]);
 
   const categories: { value: ExpenseCategory; label: string }[] = [
     { value: 'fuel', label: 'Combustível' },
@@ -37,13 +46,19 @@ export const ExpenseForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await addExpense({
+      const expenseData = {
         date,
         category,
         amount: Number(amount),
         description,
         platform_type: platformType ? (platformType as PlatformType) : undefined,
-      });
+      };
+
+      if (id) {
+        await updateExpense(id, expenseData);
+      } else {
+        await addExpense(expenseData);
+      }
       navigate('/expenses');
     } catch (error) {
       console.error('Error saving expense:', error);
@@ -58,7 +73,7 @@ export const ExpenseForm = () => {
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-zinc-800 rounded-full transition-colors">
           <ArrowLeft size={24} />
         </button>
-        <h1 className="text-2xl font-bold tracking-tight">Novo Gasto</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{id ? 'Editar Gasto' : 'Novo Gasto'}</h1>
       </header>
 
       <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 space-y-6">
@@ -152,7 +167,7 @@ export const ExpenseForm = () => {
             <div className="w-6 h-6 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin"></div>
           ) : (
             <>
-              <Save size={20} /> Salvar Gasto
+              <Save size={20} /> {id ? 'Atualizar Gasto' : 'Salvar Gasto'}
             </>
           )}
         </button>

@@ -18,7 +18,9 @@ import {
   Truck,
   Package,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Zap,
+  Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { 
@@ -30,16 +32,11 @@ import {
   Tooltip, 
   ResponsiveContainer
 } from 'recharts';
-import { format, startOfDay, startOfWeek, startOfMonth, isWithinInterval, endOfDay } from 'date-fns';
+import { format, startOfDay, startOfWeek, startOfMonth, isWithinInterval, endOfDay, isToday, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { StatCard } from '../components/StatCard';
 import { PageCard } from '../components/PageCard';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '../lib/utils';
 
 export const Dashboard = () => {
   const { user } = useAuthStore();
@@ -47,6 +44,23 @@ export const Dashboard = () => {
   const [platformFilter, setPlatformFilter] = React.useState<PlatformType | 'combined'>('combined');
 
   const activePlatforms: PlatformType[] = ['shopee', 'mercadolivre', 'frete'];
+
+  // Daily Summary Logic
+  const todayStats = useMemo(() => {
+    const todayWorkLogs = workLogs.filter(log => isToday(parseISO(log.date)));
+    const todayExpenses = expenses.filter(exp => isToday(parseISO(exp.date)));
+
+    const ganhos = todayWorkLogs.reduce((acc, log) => acc + log.gross_amount + (log.bonus_amount || 0), 0);
+    const gastos = todayExpenses.reduce((acc, exp) => acc + exp.amount, 0);
+    const lucro = ganhos - gastos;
+
+    return {
+      ganhos,
+      gastos,
+      lucro,
+      hasActivity: todayWorkLogs.length > 0 || todayExpenses.length > 0
+    };
+  }, [workLogs, expenses]);
 
   const metrics = useMemo(() => {
     const today = new Date();
@@ -187,6 +201,70 @@ export const Dashboard = () => {
         </div>
       </header>
 
+      {/* Resumo de Hoje - Premium Card */}
+      <section className="relative group">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-[2.5rem] blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+        <div className="relative bg-zinc-950 border border-zinc-800/50 rounded-[2.5rem] p-8 overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-10">
+            <Sparkles size={80} className="text-emerald-500" />
+          </div>
+
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+              <Zap size={20} />
+            </div>
+            <h3 className="text-lg font-black text-white uppercase tracking-widest">Resumo de Hoje</h3>
+          </div>
+
+          {!todayStats.hasActivity ? (
+            <div className="py-4 text-center">
+              <p className="text-zinc-500 font-bold italic">Nenhuma atividade registrada hoje.</p>
+              <Link 
+                to="/work-logs/new"
+                className="mt-4 inline-block text-emerald-400 text-xs font-black uppercase tracking-widest hover:underline"
+              >
+                Começar agora →
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Ganhos</span>
+                  <p className="text-2xl font-black text-emerald-400 tabular-nums">
+                    R$ {todayStats.ganhos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Gastos</span>
+                  <p className="text-2xl font-black text-red-400 tabular-nums">
+                    R$ {todayStats.gastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-zinc-800/50">
+                <div className="flex justify-between items-end">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Lucro Líquido</span>
+                    <p className={`text-4xl font-black tabular-nums tracking-tighter ${todayStats.lucro >= 0 ? 'text-white' : 'text-red-500'}`}>
+                      R$ {todayStats.lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                  <div className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest border ${
+                    todayStats.lucro >= 0 
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                      : 'bg-red-500/10 border-red-500/20 text-red-400'
+                  }`}>
+                    {todayStats.lucro >= 0 ? 'Lucro' : 'Prejuízo'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Quick Actions Grid */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
@@ -223,7 +301,7 @@ export const Dashboard = () => {
             </div>
             <span className="text-[9px] font-black uppercase text-zinc-400 text-center tracking-tighter">Calcular Frete</span>
           </Link>
-          <Link to="/reports" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-zinc-500 transition-all group shadow-xl">
+          <Link to="/relatorios" className="bg-zinc-900 border border-zinc-800/50 p-4 rounded-3xl flex flex-col items-center gap-3 hover:border-zinc-500 transition-all group shadow-xl">
             <div className="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
               <BarChart3 size={24} />
             </div>
@@ -313,7 +391,7 @@ export const Dashboard = () => {
                 <div className="space-y-3">
                   <h4 className="text-4xl font-black text-zinc-100 tracking-tighter">{PLATFORM_NAMES[metrics.topPlatform]}</h4>
                   <p className="text-zinc-400 text-sm leading-relaxed">Sua maior fonte de receita este mês. Continue focando aqui para maximizar seus lucros.</p>
-                  <Link to="/reports" className="inline-flex items-center gap-2 text-emerald-500 font-black uppercase text-[10px] tracking-widest hover:gap-3 transition-all pt-2">
+                  <Link to="/relatorios" className="inline-flex items-center gap-2 text-emerald-500 font-black uppercase text-[10px] tracking-widest hover:gap-3 transition-all pt-2">
                     Análise Completa <ChevronRight size={14} />
                   </Link>
                 </div>
@@ -330,7 +408,7 @@ export const Dashboard = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-black text-zinc-500 uppercase tracking-[0.2em]">Desempenho Semanal</h3>
-            <Link to="/reports" className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:underline">
+            <Link to="/relatorios" className="text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:underline">
               Ver Detalhes
             </Link>
           </div>
