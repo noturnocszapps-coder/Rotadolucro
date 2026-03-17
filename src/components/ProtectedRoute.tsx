@@ -31,5 +31,10 @@ export const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => 
     return <Navigate to="/onboarding" replace />;
   }
 
+  // If already completed onboarding and trying to access it, go to dashboard
+  if (!loading && workProfiles.length > 0 && location.pathname === '/onboarding') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children ? <>{children}</> : <Outlet />;
 };
