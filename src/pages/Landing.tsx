@@ -81,151 +81,159 @@ export const Landing = () => {
         </div>
       </section>
 
-      {/* Dashboard Preview Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative p-2 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] shadow-2xl overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-50"></div>
-            <div className="relative bg-zinc-950 rounded-[2rem] border border-zinc-800 p-6 md:p-10 space-y-10">
-              {/* Mock Dashboard Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-1">
-                  <div className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Visão Geral</div>
-                  <div className="text-3xl font-bold text-white">Painel de Controle</div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-bold text-emerald-500">Shopee</div>
-                  <div className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-bold text-zinc-400">Mercado Livre</div>
-                </div>
-              </div>
+      {/* Premium Content Hub - Consolidated Section */}
+      <section className="py-24 px-4 bg-zinc-900/30">
+        <div className="max-w-7xl mx-auto space-y-24">
+          {/* Header */}
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+              Tudo o que você precisa para <span className="text-emerald-500">lucrar mais</span>
+            </h2>
+            <p className="text-zinc-400 text-lg md:text-xl leading-relaxed">
+              Ferramentas desenvolvidas especificamente para a realidade de quem trabalha nas ruas, unindo gestão, inteligência e resultados.
+            </p>
+          </div>
 
-              {/* Mock Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl space-y-2">
-                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Ganhos Brutos</div>
-                  <div className="text-2xl font-black text-white">R$ 4.250,00</div>
-                  <div className="text-emerald-500 text-[10px] font-bold">+12% este mês</div>
-                </div>
-                <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl space-y-2">
-                  <div className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest">Lucro Líquido</div>
-                  <div className="text-2xl font-black text-white">R$ 2.840,00</div>
-                  <div className="text-emerald-500 text-[10px] font-bold">Livre de despesas</div>
-                </div>
-                <div className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl space-y-2">
-                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Despesas</div>
-                  <div className="text-2xl font-black text-red-400">R$ 1.410,00</div>
-                  <div className="text-zinc-500 text-[10px] font-bold">Combustível e Manutenção</div>
-                </div>
-                <div className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl space-y-2">
-                  <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Eficiência</div>
-                  <div className="text-2xl font-black text-white">R$ 2,45/km</div>
-                  <div className="text-emerald-500 text-[10px] font-bold">Acima da média</div>
-                </div>
-              </div>
-
-              {/* Mock Chart Area */}
-              <div className="h-64 bg-zinc-900/30 border border-zinc-800 rounded-3xl flex items-end justify-between p-6 gap-2">
-                {[40, 65, 45, 90, 55, 75, 85, 60, 95, 70, 80, 100].map((h, i) => (
-                  <div key={i} className="flex-1 bg-emerald-500/20 rounded-t-lg relative group/bar" style={{ height: `${h}%` }}>
-                    <div className="absolute inset-0 bg-emerald-500 opacity-0 group-hover/bar:opacity-100 transition-opacity rounded-t-lg"></div>
+          {/* Features & Dashboard Preview Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8 order-2 lg:order-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {[
+                  { icon: <TrendingUp size={24} />, title: "Lucro Real", desc: "Descubra quanto sobra no final da rota depois de combustível e despesas." },
+                  { icon: <Calculator size={24} />, title: "Calcular Frete", desc: "Saiba o valor ideal para cobrar por uma rota ou entrega autônoma." },
+                  { icon: <ClipboardList size={24} />, title: "Controle de Custos", desc: "Registre combustível, gastos e acompanhe sua operação diária." },
+                  { icon: <BarChart3 size={24} />, title: "Relatórios Inteligentes", desc: "Acompanhe faturamento, lucro por KM e desempenho por plataforma." }
+                ].map((item, i) => (
+                  <div key={i} className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/30 transition-all group">
+                    <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform">
+                      {item.icon}
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
+                    <p className="text-zinc-500 text-sm leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Product Explanation Section */}
-      <section className="py-24 px-4 bg-zinc-900/30">
-        <div className="max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-4">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white">Tudo o que você precisa para lucrar mais</h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">Ferramentas desenvolvidas especificamente para a realidade de quem trabalha nas ruas.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-8 rounded-[2rem] bg-zinc-900 border border-zinc-800 space-y-6 hover:border-emerald-500/50 transition-all group">
-              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                <TrendingUp size={28} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">Lucro Real</h3>
-                <p className="text-zinc-400 leading-relaxed">Descubra quanto sobra no final da rota depois de combustível e despesas.</p>
+              <div className="p-8 rounded-[2.5rem] bg-emerald-500/5 border border-emerald-500/10 space-y-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="text-emerald-500" size={24} />
+                  Feito para quem trabalha com entregas
+                </h3>
+                <div className="space-y-3">
+                  {[
+                    "Entregadores Shopee e Mercado Livre",
+                    "Motoristas de fretes e carretos",
+                    "Trabalhadores autônomos e logística"
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-center gap-3 text-zinc-400 text-sm">
+                      <CheckCircle2 size={16} className="text-emerald-500" />
+                      <span>{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="p-8 rounded-[2rem] bg-zinc-900 border border-zinc-800 space-y-6 hover:border-emerald-500/50 transition-all group">
-              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                <Calculator size={28} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">Calcular Frete</h3>
-                <p className="text-zinc-400 leading-relaxed">Saiba o valor ideal para cobrar por uma rota ou entrega autônoma.</p>
-              </div>
-            </div>
+            <div className="order-1 lg:order-2">
+              <div className="relative p-2 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-50"></div>
+                <div className="relative bg-zinc-950 rounded-[2rem] border border-zinc-800 p-6 space-y-8">
+                  <div className="flex items-center justify-between">
+                    <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Painel de Controle</div>
+                    <div className="flex gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+                      <div className="text-[8px] text-zinc-500 uppercase font-bold tracking-widest mb-1">Lucro Líquido</div>
+                      <div className="text-xl font-black text-emerald-500">R$ 2.840</div>
+                    </div>
+                    <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+                      <div className="text-[8px] text-zinc-500 uppercase font-bold tracking-widest mb-1">Eficiência</div>
+                      <div className="text-xl font-black text-white">R$ 2,45/km</div>
+                    </div>
+                  </div>
 
-            <div className="p-8 rounded-[2rem] bg-zinc-900 border border-zinc-800 space-y-6 hover:border-emerald-500/50 transition-all group">
-              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                <ClipboardList size={28} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">Controle de Custos</h3>
-                <p className="text-zinc-400 leading-relaxed">Registre combustível, gastos e acompanhe sua operação diária.</p>
-              </div>
-            </div>
+                  <div className="h-32 bg-zinc-900/30 border border-zinc-800 rounded-2xl flex items-end justify-between p-4 gap-1">
+                    {[30, 50, 40, 80, 45, 60, 70, 55, 90, 65].map((h, i) => (
+                      <div key={i} className="flex-1 bg-emerald-500/20 rounded-t-md" style={{ height: `${h}%` }}></div>
+                    ))}
+                  </div>
 
-            <div className="p-8 rounded-[2rem] bg-zinc-900 border border-zinc-800 space-y-6 hover:border-emerald-500/50 transition-all group">
-              <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                <BarChart3 size={28} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-white">Relatórios Inteligentes</h3>
-                <p className="text-zinc-400 leading-relaxed">Acompanhe faturamento, lucro por KM e desempenho por plataforma.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Who is it for Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">Feito para quem trabalha com entregas</h2>
-            <p className="text-zinc-400 text-xl leading-relaxed">
-              Não importa se você faz entregas leves ou fretes pesados, o RotaLucro se adapta à sua rotina.
-            </p>
-            <div className="space-y-4">
-              {[
-                { icon: <Package className="text-emerald-500" />, title: "Entregadores da Shopee", desc: "Controle suas rotas de coleta e entrega." },
-                { icon: <Truck className="text-emerald-500" />, title: "Entregadores do Mercado Livre", desc: "Gestão completa para motoristas de ML." },
-                { icon: <ShieldCheck className="text-emerald-500" />, title: "Trabalhadores autônomos", desc: "Ideal para fretes, carretos e rotas particulares." }
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-zinc-900 transition-colors">
-                  <div className="mt-1">{item.icon}</div>
-                  <div>
-                    <h4 className="font-bold text-white">{item.title}</h4>
-                    <p className="text-zinc-500 text-sm">{item.desc}</p>
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-zinc-950">
+                        <TrendingUp size={16} />
+                      </div>
+                      <div className="text-xs font-bold text-white">Meta Diária</div>
+                    </div>
+                    <div className="text-xs font-black text-emerald-500">85% Atingida</div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-full"></div>
-            <div className="relative aspect-square rounded-[3rem] overflow-hidden border border-zinc-800 shadow-2xl">
-              <img 
-                src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1000" 
-                alt="Logistics" 
-                className="w-full h-full object-cover opacity-60"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
-              <div className="absolute bottom-10 left-10 right-10 p-8 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-3xl space-y-2">
-                <div className="text-emerald-500 font-black text-2xl">R$ 2,85 / km</div>
-                <div className="text-zinc-300 text-sm font-medium">Média de lucro líquido em rotas otimizadas pelo RotaLucro.</div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Patch Notes Section */}
+      <section className="py-24 px-4">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">Atualizações da Plataforma</h2>
+              <p className="text-zinc-500 font-medium">Acompanhe as últimas melhorias e novidades do RotaLucro.</p>
+            </div>
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-full text-xs font-bold border border-emerald-500/20">
+              Versão Atual: v2.0.4
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                version: "v2.0",
+                title: "Nova Experiência RotaLucro",
+                description: "Novo dashboard premium com visual mais moderno. Foco total em Shopee, Mercado Livre e Frete. Melhorias na performance mobile.",
+                type: "NEW",
+                color: "bg-emerald-500"
+              },
+              {
+                version: "v1.9",
+                title: "Cálculo Inteligente de Frete",
+                description: "Novo sistema de cálculo de frete. Sugestão de valor ideal por rota. Cálculo de lucro por KM e por hora.",
+                type: "IMPROVED",
+                color: "bg-blue-500"
+              },
+              {
+                version: "v1.8",
+                title: "Relatórios Avançados",
+                description: "Novos gráficos e métricas. Melhor leitura de desempenho. Comparação entre plataformas.",
+                type: "IMPROVED",
+                color: "bg-blue-500"
+              }
+            ].map((note, i) => (
+              <div key={i} className="p-8 rounded-[2.5rem] bg-zinc-900 border border-zinc-800 space-y-6 flex flex-col">
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-500 font-black text-lg">{note.version}</span>
+                  <span className={`${note.color} text-zinc-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest`}>
+                    {note.type}
+                  </span>
+                </div>
+                <div className="space-y-2 flex-1">
+                  <h4 className="text-xl font-bold text-white">{note.title}</h4>
+                  <p className="text-zinc-500 text-sm leading-relaxed">{note.description}</p>
+                </div>
+                <div className="pt-4 flex items-center gap-2 text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                  <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
+                  Changelog Oficial
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -292,12 +300,23 @@ export const Landing = () => {
               <Link to="/register" className="hover:text-emerald-500 transition-colors">Cadastrar</Link>
               <a href="https://www.ntaplicacoes.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-500 transition-colors">NT Aplicações</a>
             </div>
-            <div className="text-zinc-600 text-[10px] uppercase tracking-[0.2em] font-bold">
-              © 2026 RotaLucro • Uma solução NT Aplicações
+            <div className="text-center md:text-right space-y-1">
+              <div className="text-zinc-600 text-[10px] uppercase tracking-[0.2em] font-bold">
+                © 2026 RotaLucro • Todos os direitos reservados
+              </div>
+              <a 
+                href="https://www.ntaplicacoes.com.br" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block text-zinc-500 text-[10px] uppercase tracking-[0.1em] font-medium hover:text-emerald-500 transition-colors"
+              >
+                Plataforma desenvolvida por NT Aplicações
+              </a>
             </div>
           </div>
         </div>
       </footer>
+
     </div>
   );
 };

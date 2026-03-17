@@ -58,19 +58,16 @@ export const MobileNav = () => {
 export const Header = () => {
   return (
     <header className="bg-zinc-950 border-b border-zinc-800 p-4 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto flex flex-col gap-1">
-        <div className="flex items-center justify-between">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-black text-white tracking-tight">RotaLucro</h1>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-zinc-100 tracking-tight">RotaLucro</h1>
-            <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-emerald-500/20">
+            <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-black border border-emerald-500/20 uppercase tracking-widest">
               Alpha
             </span>
-            <span className="text-zinc-500 text-[10px] font-medium">Version 1.0</span>
+            <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-tighter">v1.0.4</span>
           </div>
         </div>
-        <p className="text-[10px] text-zinc-500 leading-tight">
-          Aplicativo em desenvolvimento, estamos em teste Alpha, podendo haver bugs e erros.
-        </p>
       </div>
     </header>
   );
@@ -81,14 +78,14 @@ export const Sidebar = () => {
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-zinc-900 border-r border-zinc-800 h-screen sticky top-0 shrink-0">
-      <div className="p-6">
+      <div className="p-8">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-zinc-100 tracking-tight">RotaLucro</h1>
-          <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-emerald-500/20">
+          <h1 className="text-2xl font-black text-white tracking-tight">RotaLucro</h1>
+          <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-black border border-emerald-500/20 uppercase tracking-widest">
             Alpha
           </span>
         </div>
-        <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">Version 1.0</p>
+        <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-[0.2em] mt-2">Premium Platform</p>
       </div>
       
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
@@ -99,33 +96,35 @@ export const Sidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all",
                 isActive 
-                  ? "bg-emerald-500/10 text-emerald-400 font-medium" 
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                  ? "bg-emerald-500/10 text-emerald-400 font-bold shadow-lg shadow-emerald-500/5" 
+                  : "text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-200"
               )}
             >
-              <item.icon size={20} />
-              <span>{item.label}</span>
+              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <span className="text-sm tracking-tight">{item.label}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-6 border-t border-zinc-800">
-        <div className="text-[10px] text-zinc-500 space-y-2">
-          <p className="leading-tight">Aplicativo em desenvolvimento, estamos em teste Alpha, podendo haver bugs e erros.</p>
-          <p>
-            Desenvolvido por{' '}
-            <a 
-              href="https://instagram.com/onoturnocsz" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:underline"
-            >
-              @onoturnocsz
-            </a>
-          </p>
+      <div className="p-8 border-t border-zinc-800/50">
+        <div className="space-y-4">
+          <div className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+            Desenvolvido por
+          </div>
+          <a 
+            href="https://www.ntaplicacoes.com.br" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 transition-colors group"
+          >
+            <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/10 transition-colors">
+              <Instagram size={14} />
+            </div>
+            <span className="text-xs font-bold">NT Aplicações</span>
+          </a>
         </div>
       </div>
     </aside>
@@ -134,29 +133,17 @@ export const Sidebar = () => {
 
 export const Footer = () => {
   return (
-    <footer className="p-8 border-t border-zinc-800 mt-auto text-center md:text-left">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-xs text-zinc-500 max-w-xs">
-          <p>Aplicativo em desenvolvimento, estamos em teste Alpha, podendo haver bugs e erros.</p>
-          <p className="mt-2">© 2026 RotaLucro. Version 1.0</p>
-        </div>
-        <div className="text-sm text-zinc-500">
-          <p>
-            Desenvolvido por{' '}
-            <a 
-              href="https://instagram.com/onoturnocsz" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:underline font-medium"
-            >
-              <span className="flex items-center gap-1"><Instagram size={14} /> @onoturnocsz</span>
-            </a>
-          </p>
-        </div>
+    <footer className="py-8 border-t border-zinc-800/50">
+      <div className="flex justify-center items-center text-center">
+        <p className="text-[10px] font-black text-zinc-700 uppercase tracking-[0.3em]">© 2026 RotaLucro</p>
       </div>
     </footer>
   );
 };
+
+
+
+
 
 export const Layout = () => {
   return (
@@ -164,12 +151,14 @@ export const Layout = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
         <Header />
-        <main className="flex-1 pb-24 md:pb-8 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 pb-12 md:pb-16">
           <div className="max-w-7xl mx-auto">
             <Outlet />
+            <div className="mt-12 md:mt-20">
+              <Footer />
+            </div>
           </div>
         </main>
-        <Footer />
       </div>
       <MobileNav />
     </div>
